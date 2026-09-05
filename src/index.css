@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --soil: #0f120d;
+    --soil-card: #151b13;
+    --soil-card-hover: #1c2419;
+    --soil-border: rgba(229, 223, 211, 0.10);
+    --leaf: #6f8f5b;
+    --leaf-bright: #9fbb84;
+    --leaf-emerald: #4a5d23;
+    --leaf-forest: #2a3515;
+    --parchment: #e5dfd3;
+    --parchment-muted: #8b9584;
+    --accent-sand: #c4a484;
+    --accent-sand-glow: rgba(196, 164, 132, 0.25);
+    --gold: #c4a484;
+    --gold-glow: rgba(196, 164, 132, 0.25);
+    --amber-pistil: #d6894b;
+    --amber-pistil-dark: #a85822;
+  }
+
+  body {
+    background-color: #0f120d;
+    color: #e5dfd3;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: 'Fraunces', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f120d;
+}
+::-webkit-scrollbar-thumb {
+  background: #242c1f;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #394532;
+}
+
+/* Subtle grain texture overlay for luxury film feel */
+.bg-grain {
+  background-image: radial-gradient(rgba(236, 228, 211, 0.02) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Plant wind sway animation */
+@keyframes naturalSway {
+  0%, 100% {
+    transform: rotate(-0.8deg);
+  }
+  50% {
+    transform: rotate(0.9deg);
+  }
+}
+
+.animate-natural-sway {
+  animation: naturalSway 6s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Trichome sparkle animation */
+@keyframes sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.animate-sparkle {
+  animation: sparkle 3s ease-in-out infinite;
+}
