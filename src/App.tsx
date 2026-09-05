@@ -505,7 +505,7 @@ export default function App() {
       {/* 5. FOOTER                                                                 */}
       {/* ========================================================================= */}
       <footer className="py-8 text-center border-t border-[#ece4d3]/10 text-xs text-[#8b9584] flex flex-col gap-1.5">
-        <div>Verdant · Livingston, CA</div>
+        <div>Verdant · Artisanal Cultivation</div>
         <div className="text-[10px] text-[#8b9584]/70">
           Hemp-derived CBD flower. 21+. This site does not sell intoxicating cannabis.
         </div>
