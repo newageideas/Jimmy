@@ -16,7 +16,7 @@ export const GeminiCultivarBreederModal: React.FC<GeminiCultivarBreederModalProp
   const [desiredEffect, setDesiredEffect] = useState('Deep evening somatic calm without cognitive fog');
   const [aromaNotes, setAromaNotes] = useState('Sweet pine needles, damp loam, and candied Meyer lemon peel');
   const [energyLevel, setEnergyLevel] = useState('Twilight / Nighttime');
-  const [customNotes, setCustomNotes] = useState('Living organic soil in Livingston, CA with high myrcene');
+  const [customNotes, setCustomNotes] = useState('Living organic soil in 209 Central Valley, CA with high myrcene');
   const [isLoading, setIsLoading] = useState(false);
   const [generatedStrain, setGeneratedStrain] = useState<Strain | null>(null);
 
@@ -45,9 +45,9 @@ export const GeminiCultivarBreederModal: React.FC<GeminiCultivarBreederModalProp
         const d = json.data;
         const newStrain: Strain = {
           id: `gemini-breed-${Date.now()}`,
-          name: d.name || 'Livingston Solstice CBD',
+          name: d.name || 'notme 209 Solstice Reserve',
           tag: d.tag || 'Artisanal Hybrid · High CBD · <0.2% THC',
-          desc: d.desc || 'Organically cultivated in Livingston living soil with full terpene profile.',
+          desc: d.desc || 'Organically cultivated in 209 living soil with full terpene profile.',
           cbdPercent: d.cbdPercent || 18.8,
           thcPercent: d.thcPercent || 0.16,
           terpenes: d.terpenes || [

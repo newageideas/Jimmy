@@ -219,7 +219,7 @@ export const GeminiAdvisorModal: React.FC<GeminiAdvisorModalProps> = ({
                 id="advisor-wa-inquire-btn"
                 type="button"
                 onClick={() => {
-                  onOpenWhatsApp(`Hi Verdant! I used your botanical advisor and it suggested ${advice.strainMatch} for ${need}. Do you have fresh jars in stock?`);
+                  onOpenWhatsApp(`Hi notme 209! I used your botanical advisor and it suggested ${advice.strainMatch} for ${need}. Do you have fresh jars in stock?`);
                   onClose();
                 }}
                 className="w-full py-2.5 rounded-full bg-[#25d366] text-[#0b140e] font-mono font-semibold text-xs hover:bg-[#20ba59] transition-all flex items-center justify-center gap-2 tracking-wider"

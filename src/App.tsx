@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BlossomHeroVideo } from './components/BlossomHeroVideo';
 import { Nug3DViewer } from './components/Nug3DViewer';
+import { HeroLoadUpScreen } from './components/HeroLoadUpScreen';
+import { NotMe209Logo } from './components/NotMe209Logo';
 import { DEFAULT_STRAINS } from './utils/strains';
 import { Strain } from './types';
 import { isMuted, toggleMute, playSoftClick, playWaterDrop, playTrichomeChime } from './utils/audio';
@@ -72,6 +74,7 @@ export default function App() {
 
   const [audioMuted, setAudioMuted] = useState(isMuted());
   const [activeNav, setActiveNav] = useState('home');
+  const [showIntro, setShowIntro] = useState(true);
 
   // Edit Mode state ("the menu shows edit utton fro image n the name of it n tyhats it. more visual then info")
   const [isEditing, setIsEditing] = useState(false);
@@ -164,25 +167,34 @@ export default function App() {
 
   // Launch WhatsApp
   const sendWhatsApp = (text?: string) => {
-    const message = text || "Hello, I'm interested in your rooted clones and cured flower.";
+    const message = text || "Hello notme 209! I'm interested in your living-soil flower reserve jars and rooted clones.";
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`, '_blank');
   };
 
   return (
     <div className="min-h-screen bg-[#0f120d] text-[#ece4d3] flex flex-col select-none font-sans overflow-x-hidden">
+      {/* Hero Load-Up Page with the purple notme 209 emblem */}
+      {showIntro && <HeroLoadUpScreen onComplete={() => setShowIntro(false)} />}
+
       {/* ========================================================================= */}
       {/* 1. TOP STICKY NAVIGATION                                                  */}
       {/* ========================================================================= */}
-      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-4 sm:px-8 py-3.5 bg-[#0f120d]/85 backdrop-blur-md border-b border-[#ece4d3]/10 transition-all">
-        {/* Brand */}
+      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-4 sm:px-8 py-3 bg-[#0f120d]/85 backdrop-blur-md border-b border-[#ece4d3]/10 transition-all">
+        {/* Brand: notme 209 Logo Emblem & Typography */}
         <button
           type="button"
           onClick={() => scrollToSection('home')}
-          className="text-xl sm:text-2xl font-serif text-[#ece4d3] flex items-center gap-1 hover:text-white cursor-pointer bg-transparent border-none"
+          className="flex items-center gap-2.5 hover:opacity-90 cursor-pointer bg-transparent border-none group text-left"
+          title="notme 209 Artisanal CBD"
         >
-          <span>Verdant</span>
-          <span className="text-[#b4cd96] italic">.</span>
+          <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center bg-[#170c24] border border-purple-500/40 group-hover:border-purple-400/80 shadow-[0_0_12px_rgba(192,132,252,0.3)] transition-all">
+            <NotMe209Logo size={32} showGlow={false} />
+          </div>
+          <div className="flex items-baseline gap-1 text-xl sm:text-2xl font-bold tracking-tight text-[#ece4d3]">
+            <span>notme</span>
+            <span className="text-[#c084fc]">209</span>
+          </div>
         </button>
 
         {/* Center Nav Links */}
@@ -228,7 +240,21 @@ export default function App() {
         </div>
 
         {/* Right Nav Actions */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Replay Intro Hero Screen */}
+          <button
+            type="button"
+            onClick={() => {
+              playSoftClick();
+              setShowIntro(true);
+            }}
+            title="Replay notme 209 logo hero intro"
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-full border border-purple-500/30 text-[#c084fc] hover:border-purple-400 hover:text-white hover:bg-purple-900/30 transition-all cursor-pointer"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c084fc] animate-pulse" />
+            <span className="hidden xs:inline">Hero Intro</span>
+            <span className="xs:hidden">Intro</span>
+          </button>
           {/* Sound Mute/Unmute */}
           <button
             type="button"
@@ -504,10 +530,27 @@ export default function App() {
       {/* ========================================================================= */}
       {/* 5. FOOTER                                                                 */}
       {/* ========================================================================= */}
-      <footer className="py-8 text-center border-t border-[#ece4d3]/10 text-xs text-[#8b9584] flex flex-col gap-1.5">
-        <div>Verdant · Artisanal Cultivation</div>
+      <footer className="py-8 text-center border-t border-[#ece4d3]/10 text-xs text-[#8b9584] flex flex-col items-center gap-2">
+        <div className="flex items-center gap-2 text-sm text-[#ece4d3]">
+          <div className="w-5 h-5 rounded-full overflow-hidden flex items-center justify-center bg-[#170c24] border border-purple-500/40 shadow-sm">
+            <NotMe209Logo size={18} showGlow={false} />
+          </div>
+          <span className="font-bold text-white tracking-tight">notme <span className="text-[#c084fc]">209</span></span>
+          <span className="text-[#8b9584]">·</span>
+          <span className="text-[#8b9584]">Artisanal Botanical Cultivation</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            playSoftClick();
+            setShowIntro(true);
+          }}
+          className="text-[11px] text-[#c084fc] hover:text-[#d8b4fe] underline underline-offset-2 transition-colors cursor-pointer"
+        >
+          Replay Logo Intro
+        </button>
         <div className="text-[10px] text-[#8b9584]/70">
-          Hemp-derived CBD flower. 21+. This site does not sell intoxicating cannabis.
+          Hemp-derived CBD flower & clones. 21+. This site does not sell intoxicating cannabis.
         </div>
       </footer>
 

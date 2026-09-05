@@ -12,7 +12,7 @@ export const WhatsAppDrawer: React.FC<WhatsAppDrawerProps> = ({ initialMessage =
   const [chatLog, setChatLog] = useState<Array<{ sender: 'user' | 'grower'; text: string; time: string }>>([
     {
       sender: 'grower',
-      text: 'Hello! Welcome to Verdant farm office. Which cultivar were you curious about this week?',
+      text: 'Hello! Welcome to notme 209 farm office. Which cultivar were you curious about this week?',
       time: 'Just now',
     },
   ]);
@@ -73,7 +73,7 @@ export const WhatsAppDrawer: React.FC<WhatsAppDrawerProps> = ({ initialMessage =
 
   const quickPrompts = [
     'Which strain is best for winding down in the evening?',
-    'What living soil nutrients do you use in Livingston?',
+    'What living soil nutrients do you use in the 209?',
     'How do you achieve <0.3% THC with 18%+ CBD?',
     'Can I order a sample jar of Sunset Sherbert?',
   ];
@@ -170,14 +170,14 @@ export const WhatsAppDrawer: React.FC<WhatsAppDrawerProps> = ({ initialMessage =
             <div className="flex items-center justify-between pb-3 border-b border-[#e5dfd3]/10">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-[#151b13] border border-[#6f8f5b] flex items-center justify-center font-serif italic text-[#c4a484] text-lg font-bold">
-                    V
+                  <div className="w-10 h-10 rounded-full bg-[#170c24] border border-purple-500/50 flex items-center justify-center font-mono text-[#c084fc] text-xs font-bold shadow-md">
+                    209
                   </div>
                   <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#25d366] ring-2 ring-[#0f120d]" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-[#e5dfd3]">Verdant Botanical Cultivator</div>
-                  <div className="text-[11px] text-[#6f8f5b] font-mono">Farm Cellar & Cultivation Office</div>
+                  <div className="text-sm font-semibold text-[#e5dfd3]">notme 209 Botanical Cultivator</div>
+                  <div className="text-[11px] text-[#c084fc] font-mono">Living-Soil Cultivation Office</div>
                 </div>
               </div>
 

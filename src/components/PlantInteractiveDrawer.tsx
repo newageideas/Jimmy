@@ -76,7 +76,7 @@ export const PlantInteractiveDrawer: React.FC<PlantInteractiveDrawerProps> = ({
   const [chatLog, setChatLog] = useState<Array<{ sender: 'user' | 'grower'; text: string; time: string }>>([
     {
       sender: 'grower',
-      text: "Welcome to Verdant Botanicals! Are you looking for cured living-soil flower reserve jars or healthy rooted clone cuttings?",
+      text: "Welcome to notme 209 Botanicals! Are you looking for cured living-soil flower reserve jars or healthy rooted clone cuttings?",
       time: 'Just now',
     },
   ]);
@@ -132,7 +132,7 @@ export const PlantInteractiveDrawer: React.FC<PlantInteractiveDrawerProps> = ({
     playWaterDrop();
     const newStrain: Strain = {
       id: `clone-${Date.now()}`,
-      name: 'Livingston Emerald Clone',
+      name: '209 Emerald Reserve Clone',
       tag: 'Clone Cutting · 20.2% CBD · <0.2% THC',
       desc: 'Selected from vigorous mother stock. Fast rooter with notes of sweet Valencia orange, pine resin, and freshly tilled living alluvium.',
       cbdPercent: 20.2,
@@ -165,7 +165,7 @@ export const PlantInteractiveDrawer: React.FC<PlantInteractiveDrawerProps> = ({
       let reply = "Thanks for your message! Our current cold-cured batches are held at 60°F / 62% RH. Would you like a 1oz reserve jar or rooted nursery cuttings?";
       const lower = msg.toLowerCase();
       if (lower.includes('clone') || lower.includes('cutting')) {
-        reply = "Our rooted clones are cut at 45° from mother stock and hardened in living soil mycorrhizal plugs. Pickup in Livingston, CA or express farm carrier dispatch available.";
+        reply = "Our rooted clones are cut at 45° from mother stock and hardened in living soil mycorrhizal plugs. Pickup in 209 California or express farm carrier dispatch available.";
       } else if (lower.includes('coa') || lower.includes('lab') || lower.includes('thc')) {
         reply = "Every harvest is third-party tested via HPLC. All genetics are guaranteed strictly compliant under 0.3% Delta-9 THC with full cannabinoid certificates.";
       } else if (lower.includes('sherbert') || lower.includes('northern') || lower.includes('harlequin')) {
@@ -178,7 +178,7 @@ export const PlantInteractiveDrawer: React.FC<PlantInteractiveDrawerProps> = ({
 
   const cleanPhone = phone.replace(/\D/g, '');
   const waExternalUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-    `Hello, I'm reaching out from Verdant regarding the ${selectedStrain.name} flower & clone cuttings.`
+    `Hello, I'm reaching out from notme 209 regarding the ${selectedStrain.name} flower & clone cuttings.`
   )}`;
 
   return (
@@ -192,11 +192,11 @@ export const PlantInteractiveDrawer: React.FC<PlantInteractiveDrawerProps> = ({
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between border-b border-[#e5dfd3]/10 px-5 sm:px-8 py-4 bg-[#141a12]/90 gap-4">
           {/* Brand & Subtitle */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#1c2419] border border-[#c4a484]/40 flex items-center justify-center text-[#c4a484] font-serif italic text-lg shadow-inner">
-              V
+            <div className="w-9 h-9 rounded-full bg-[#170c24] border border-purple-500/50 flex items-center justify-center text-[#c084fc] font-mono text-xs font-bold shadow-inner">
+              209
             </div>
             <div>
-              <div className="font-serif italic text-lg text-[#e5dfd3] leading-none">Verdant Interactive Console</div>
+              <div className="font-serif italic text-lg text-[#e5dfd3] leading-none">notme 209 Interactive Console</div>
               <div className="text-[10px] font-mono text-[#8b9584] mt-0.5 tracking-wider">
                 CURRENT PHENOTYPE: <span className="text-[#c4a484] font-semibold">{selectedStrain.name}</span>
               </div>
@@ -695,7 +695,7 @@ export const PlantInteractiveDrawer: React.FC<PlantInteractiveDrawerProps> = ({
                       +1 (209) 555-0192
                     </div>
                     <p className="text-xs text-[#8b9584] font-light mt-0.5">
-                      Direct contact with Livingston, CA Farm HQ
+                      Direct contact with Central Valley 209 Farm HQ
                     </p>
                   </div>
                 </div>
@@ -746,14 +746,14 @@ export const PlantInteractiveDrawer: React.FC<PlantInteractiveDrawerProps> = ({
                 <div className="bg-[#161d15] px-4 py-2.5 border-b border-[#e5dfd3]/10 flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
                     <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-[#25d366]/20 border border-[#25d366] flex items-center justify-center text-[#25d366] font-mono text-xs font-bold">
-                        V
+                      <div className="w-8 h-8 rounded-full bg-[#170c24] border border-purple-500/50 flex items-center justify-center text-[#c084fc] font-mono text-[10px] font-bold">
+                        209
                       </div>
                       <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#25d366] ring-2 ring-[#0f120d]" />
                     </div>
                     <div>
-                      <div className="text-xs font-serif italic text-[#e5dfd3]">Verdant · Cultivation Office</div>
-                      <div className="text-[9px] font-mono text-[#25d366]">Online · Livingston Farm HQ</div>
+                      <div className="text-xs font-serif italic text-[#e5dfd3]">notme 209 · Cultivation Office</div>
+                      <div className="text-[9px] font-mono text-[#25d366]">Online · 209 Farm HQ</div>
                     </div>
                   </div>
 

@@ -123,7 +123,7 @@ export const StrainMenu: React.FC<StrainMenuProps> = ({
             Artisanal Strains on Hand
           </h2>
           <p className="text-[#8b9584] mt-3 leading-relaxed text-sm sm:text-base font-light">
-            Small-batch organic CBD flower grown in Livingston, California. Slow-cured for 30 days in temperature-regulated glass. Tap any strain to load its genetics into the live growth simulator above.
+            Small-batch organic CBD flower grown in Central Valley (209), California. Slow-cured for 30 days in temperature-regulated glass. Tap any strain to load its genetics into the live growth simulator above.
           </p>
         </div>
 
