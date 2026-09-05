@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface BlossomHeroVideoProps {
   onOpenMenu?: () => void;
@@ -7,16 +7,63 @@ interface BlossomHeroVideoProps {
 
 export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
   onOpenMenu,
-  onOpenContact,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isMuted, setIsMuted] = useState<boolean>(true);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [hasError, setHasError] = useState<boolean>(false);
+
+  // Guarantee mobile browser autoplay compliance
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = true;
+    video.defaultMuted = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+
+    const tryAutoPlay = () => {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+            setHasError(false);
+          })
+          .catch((err) => {
+            // Browser autoplay restrictions blocked unmuted/automatic playback until interaction
+            console.warn('Browser requires user interaction to play:', err);
+            setIsPlaying(false);
+          });
+      }
+    };
+
+    tryAutoPlay();
+  }, []);
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!videoRef.current) return;
-    videoRef.current.muted = !videoRef.current.muted;
-    setIsMuted(videoRef.current.muted);
+    const nextMuted = !videoRef.current.muted;
+    videoRef.current.muted = nextMuted;
+    setIsMuted(nextMuted);
+    if (!isPlaying) {
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
+  };
+
+  const handleManualPlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.muted = true;
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    }
   };
 
   const handleClickVideo = () => {
@@ -38,20 +85,51 @@ export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
         <div className="absolute -inset-4 bg-radial from-[#254222]/35 via-transparent to-transparent opacity-70 blur-xl pointer-events-none" />
 
         {/* Blossom Time-Lapse Video (Plays automatically on loop) */}
-        <video
-          ref={videoRef}
-          src="/blossom.mp4"
-          poster="/blossom-poster.jpg"
-          autoPlay
-          loop
-          muted={isMuted}
-          playsInline
-          preload="auto"
-          className="relative z-10 w-full h-full object-cover"
-        />
+        {!hasError ? (
+          <video
+            ref={videoRef}
+            src="/blossom.mp4"
+            poster="/blossom-poster.jpg"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onError={(e) => {
+              console.warn('Video failed to load / play from /blossom.mp4:', e);
+              setHasError(true);
+            }}
+            className="relative z-10 w-full h-full object-cover"
+          >
+            <source src="/blossom.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          <img
+            src="/blossom-poster.jpg"
+            alt="Livingston Blossom"
+            className="relative z-10 w-full h-full object-cover"
+          />
+        )}
+
+        {/* Play indicator if paused by browser */}
+        {!isPlaying && !hasError && (
+          <div
+            onClick={handleManualPlay}
+            className="absolute inset-0 z-20 flex items-center justify-center bg-black/30 backdrop-blur-[2px] transition-opacity"
+            title="Click to play"
+          >
+            <div className="w-16 h-16 rounded-full bg-[#25d366] text-[#0b140e] flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        )}
 
         {/* Top Minimal Badge */}
-        <div className="absolute top-3.5 left-3.5 right-3.5 z-20 flex items-center justify-between pointer-events-none">
+        <div className="absolute top-3.5 left-3.5 right-3.5 z-30 flex items-center justify-between pointer-events-none">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0a0f0b]/80 backdrop-blur-md border border-[#ece4d3]/15 text-[10px] font-mono text-[#ece4d3] tracking-wide">
             <span className="w-1.5 h-1.5 rounded-full bg-[#25d366] animate-pulse" />
             <span>CLONE TO BLOSSOM</span>
@@ -81,7 +159,7 @@ export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
         </div>
 
         {/* Bottom Click Cue */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 p-4 pt-10 bg-gradient-to-t from-[#0a0f0b]/95 via-[#0a0f0b]/70 to-transparent flex items-center justify-center">
+        <div className="absolute bottom-0 left-0 right-0 z-30 p-4 pt-10 bg-gradient-to-t from-[#0a0f0b]/95 via-[#0a0f0b]/70 to-transparent flex items-center justify-center">
           <div className="flex items-center gap-2 text-xs font-medium text-[#ece4d3] group-hover:text-[#c9a227] transition-colors bg-[#0a0f0b]/80 backdrop-blur-md px-4 py-2 rounded-full border border-[#ece4d3]/15 group-hover:border-[#c9a227]/50 shadow-md">
             <span>Tap to explore menu & contact</span>
             <svg
