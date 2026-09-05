@@ -24,21 +24,19 @@ export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
       const p = video.play();
       if (p && typeof p.then === 'function') p.catch(() => {});
     };
-    if (video.readyState >= 2) tryPlay();
-    else {
-      video.addEventListener('loadeddata', tryPlay, { once: true });
-      video.addEventListener('canplay', tryPlay, { once: true });
-    }
-    const onGesture = () => {
-      tryPlay();
-      window.removeEventListener('touchstart', onGesture);
-      window.removeEventListener('click', onGesture);
-    };
-    window.addEventListener('touchstart', onGesture, { once: true });
-    window.addEventListener('click', onGesture, { once: true });
+    tryPlay();
+    video.addEventListener('loadeddata', tryPlay);
+    video.addEventListener('canplay', tryPlay);
+    const onGesture = () => tryPlay();
+    window.addEventListener('touchstart', onGesture, { passive: true });
+    window.addEventListener('click', onGesture);
+    const id = window.setInterval(tryPlay, 800);
     return () => {
+      video.removeEventListener('loadeddata', tryPlay);
+      video.removeEventListener('canplay', tryPlay);
       window.removeEventListener('touchstart', onGesture);
       window.removeEventListener('click', onGesture);
+      window.clearInterval(id);
     };
   }, []);
 
@@ -53,7 +51,7 @@ export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
         <div className="absolute -inset-4 bg-radial from-[#254222]/35 via-transparent to-transparent opacity-70 blur-xl pointer-events-none" />
         <video
           ref={videoRef}
-          src="/blossom.mp4"
+          src="/blossom.mp4#t=0.1"
           autoPlay
           loop
           muted
