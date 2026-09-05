@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 interface BlossomHeroVideoProps {
   onOpenMenu?: () => void;
@@ -11,24 +11,36 @@ export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
   onOpenMenu,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     video.muted = true;
     video.defaultMuted = true;
+    video.volume = 0;
     video.playsInline = true;
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
     video.setAttribute('webkit-playsinline', '');
+    const markPlaying = () => {
+      if (!video.paused && video.currentTime > 0.05) setPlaying(true);
+    };
     const tryPlay = () => {
       video.muted = true;
+      video.volume = 0;
       const p = video.play();
-      if (p && typeof p.then === 'function') p.catch(() => {});
+      if (p && typeof p.then === 'function') {
+        p.then(() => markPlaying()).catch(() => {});
+      } else {
+        markPlaying();
+      }
     };
     tryPlay();
     video.addEventListener('loadeddata', tryPlay);
     video.addEventListener('canplay', tryPlay);
+    video.addEventListener('playing', markPlaying);
+    video.addEventListener('timeupdate', markPlaying);
     const onGesture = () => tryPlay();
     window.addEventListener('touchstart', onGesture, { passive: true });
     window.addEventListener('click', onGesture);
@@ -36,6 +48,8 @@ export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
     return () => {
       video.removeEventListener('loadeddata', tryPlay);
       video.removeEventListener('canplay', tryPlay);
+      video.removeEventListener('playing', markPlaying);
+      video.removeEventListener('timeupdate', markPlaying);
       window.removeEventListener('touchstart', onGesture);
       window.removeEventListener('click', onGesture);
       window.clearInterval(id);
@@ -58,14 +72,14 @@ export const BlossomHeroVideo: React.FC<BlossomHeroVideoProps> = ({
         />
         <video
           ref={videoRef}
-          src="/blossom.mp4#t=0.1"
+          src="/blossom-v2.mp4#t=0.1"
           poster={POSTER}
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          className="relative z-10 w-full h-full object-cover pointer-events-none bg-transparent"
+          className={`absolute inset-0 z-10 w-full h-full object-cover pointer-events-none bg-transparent transition-opacity duration-300 ${playing ? 'opacity-100' : 'opacity-0'}`}
         />
         <div className="absolute top-3.5 left-3.5 right-3.5 z-30 flex items-center justify-between pointer-events-none">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0a0f0b]/80 backdrop-blur-md border border-[#ece4d3]/15 text-[10px] font-mono text-[#ece4d3] tracking-wide">
