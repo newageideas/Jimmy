@@ -22,6 +22,18 @@ const PRESET_NUG_PHOTOS = [
     url: '/sour-space-candy.jpg',
   },
   {
+  {
+    name: 'Cupcake · Frosty Dessert Nug',
+    url: '/cupcake.jpg',
+  },
+  {
+    name: 'CakeBoss · Pale Frost Cake',
+    url: '/cakeboss.jpg',
+  },
+  {
+    name: 'Gelatti · Purple Gelato Cross',
+    url: '/gelatti.jpg',
+  },
     name: 'Diamond Trichome Sinsemilla with Amber Pistils',
     url: 'https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=1000&q=85',
   },
@@ -36,7 +48,7 @@ export default function App() {
       const saved = localStorage.getItem('verdant_strains');
       if (saved) {
         const list: Strain[] = JSON.parse(saved);
-        return list.map((s) => {
+        const mapped = list.map((s) => {
           if (s.id === 'sunset-sherbert' && (!s.img || s.img.includes('1568644396922'))) {
             return {
               ...s,
@@ -63,6 +75,9 @@ export default function App() {
           }
           return s;
         });
+        const merged = mapped;
+        const have = new Set(merged.map((x) => x.id));
+        return [...merged, ...DEFAULT_STRAINS.filter((d) => !have.has(d.id))];
       }
     } catch {
       // fallback
