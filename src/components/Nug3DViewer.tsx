@@ -27,7 +27,36 @@ export const Nug3DViewer: React.FC<Nug3DViewerProps> = ({
   const rotStartRef = useRef({ y: 0, x: 0 });
   const panStartRef = useRef({ x: 0, y: 0 });
 
-  const currentImg = strain.img || '';
+  // Multi-photo support
+  const photos = strain.imgs && strain.imgs.length > 0 ? strain.imgs : [strain.img || ''];
+  const initialIndex = Math.max(0, photos.indexOf(strain.img || ''));
+  const [photoIndex, setPhotoIndex] = useState(initialIndex >= 0 ? initialIndex : 0);
+  const currentImg = photos[photoIndex] || strain.img || '';
+
+  useEffect(() => {
+    const idx = photos.indexOf(strain.img || '');
+    if (idx >= 0) {
+      setPhotoIndex(idx);
+    }
+  }, [strain.id, strain.img, photos]);
+
+  const nextPhoto = () => {
+    playSoftClick();
+    setPhotoIndex((prev) => (prev + 1) % photos.length);
+    setRotY(0);
+    setRotX(0);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const prevPhoto = () => {
+    playSoftClick();
+    setPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    setRotY(0);
+    setRotX(0);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
 
   // Pointer drag handlers
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -214,10 +243,12 @@ export const Nug3DViewer: React.FC<Nug3DViewerProps> = ({
           >
             {/* The High-Resolution Nug Image — blend-multiply ensures zero white box artifact */}
             <img
+              key={`${strain.id}-${photoIndex}`}
               src={currentImg}
-              alt={strain.name}
+              alt={`${strain.name} - Photo ${photoIndex + 1}`}
+              loading="eager"
               draggable={false}
-              className="max-w-[85vw] sm:max-w-[480px] max-h-[52vh] sm:max-h-[58vh] object-contain select-none mix-blend-multiply drop-shadow-[0_20px_35px_rgba(0,0,0,0.3)] filter contrast-[1.05] saturate-[1.05]"
+              className="max-w-[85vw] sm:max-w-[480px] max-h-[52vh] sm:max-h-[58vh] object-contain select-none drop-shadow-[0_25px_40px_rgba(0,0,0,0.45)] filter contrast-[1.05] saturate-[1.05]"
             />
 
             {/* Subtle trichome crystalline glint that follows 3D angle */}
@@ -229,6 +260,59 @@ export const Nug3DViewer: React.FC<Nug3DViewerProps> = ({
             />
           </div>
         </div>
+
+        {/* Stage Photo Navigation Arrows (when multiple photos exist) */}
+        {photos.length > 1 && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={(e) => {
+                e.stopPropagation();
+                prevPhoto();
+              }}
+              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-[#141911]/85 border border-[#ece4d3]/30 text-[#ece4d3] hover:bg-[#c9a227] hover:text-[#12160f] hover:border-[#c9a227] transition-all cursor-pointer flex items-center justify-center text-3xl leading-none shadow-xl active:scale-90"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={(e) => {
+                e.stopPropagation();
+                nextPhoto();
+              }}
+              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-[#141911]/85 border border-[#ece4d3]/30 text-[#ece4d3] hover:bg-[#c9a227] hover:text-[#12160f] hover:border-[#c9a227] transition-all cursor-pointer flex items-center justify-center text-3xl leading-none shadow-xl active:scale-90"
+            >
+              ›
+            </button>
+
+            {/* Photo Indicator Dots & Label */}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#141911]/90 backdrop-blur-md border border-[#ece4d3]/20 shadow-lg">
+              <span className="text-[11px] font-mono text-[#c9a227] font-semibold">
+                Photo {photoIndex + 1} of {photos.length}
+              </span>
+              <div className="flex items-center gap-1.5 ml-1">
+                {photos.map((_, pIdx) => (
+                  <button
+                    key={pIdx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPhotoIndex(pIdx);
+                    }}
+                    className={`transition-all rounded-full cursor-pointer ${
+                      pIdx === photoIndex
+                        ? 'w-4 h-1.5 bg-[#c9a227]'
+                        : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/75'
+                    }`}
+                    aria-label={`View photo ${pIdx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Bottom Bar: Action Button */}

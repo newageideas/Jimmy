@@ -1,0 +1,291 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <!-- Background Vignette Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="65%">
+      <stop offset="0%" stop-color="#1b0f2e" />
+      <stop offset="45%" stop-color="#120820" />
+      <stop offset="80%" stop-color="#090310" />
+      <stop offset="100%" stop-color="#05010a" />
+    </radialGradient>
+
+    <!-- Blur Filters for Bokeh Orbs -->
+    <filter id="bokehBlurSmall" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="16" />
+    </filter>
+    <filter id="bokehBlurMed" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="28" />
+    </filter>
+    <filter id="bokehBlurLarge" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="44" />
+    </filter>
+    <filter id="leafGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <!-- Leaf Gradients -->
+    <linearGradient id="purpleLeafGrad" x1="640" y1="90" x2="640" y2="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="30%" stop-color="#9333ea" />
+      <stop offset="65%" stop-color="#581c87" />
+      <stop offset="100%" stop-color="#2e1065" />
+    </linearGradient>
+
+    <linearGradient id="leafVeinGrad" x1="640" y1="90" x2="640" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f5d0fe" />
+      <stop offset="50%" stop-color="#e9d5ff" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <!-- Silver Ring Gradient -->
+    <linearGradient id="silverRingGrad" x1="530" y1="260" x2="750" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="25%" stop-color="#d1d5db" />
+      <stop offset="50%" stop-color="#9ca3af" />
+      <stop offset="75%" stop-color="#6b7280" />
+      <stop offset="100%" stop-color="#f3f4f6" />
+    </linearGradient>
+
+    <!-- Inner Badge Gradient -->
+    <radialGradient id="badgeInnerDark" cx="640" cy="370" r="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#241238" />
+      <stop offset="70%" stop-color="#140822" />
+      <stop offset="100%" stop-color="#0a0312" />
+    </radialGradient>
+  </defs>
+
+  <!-- 1. Background Canvas -->
+  <rect width="1280" height="720" fill="url(#bgGrad)" />
+
+  <!-- 2. Ambient Bokeh Light Circles (Matching User's Uploaded Image) -->
+  <g id="bokeh-lights">
+    <!-- Purple / Violet Orbs -->
+    <circle cx="510" cy="220" r="38" fill="#a855f7" opacity="0.32" filter="url(#bokehBlurMed)" />
+    <circle cx="580" cy="180" r="45" fill="#7c3aed" opacity="0.25" filter="url(#bokehBlurMed)" />
+    <circle cx="710" cy="200" r="42" fill="#9333ea" opacity="0.28" filter="url(#bokehBlurMed)" />
+    <circle cx="430" cy="460" r="55" fill="#a855f7" opacity="0.22" filter="url(#bokehBlurLarge)" />
+    <circle cx="860" cy="470" r="50" fill="#7e22ce" opacity="0.25" filter="url(#bokehBlurLarge)" />
+
+    <!-- Cyan / Blue Orbs -->
+    <circle cx="750" cy="225" r="30" fill="#38bdf8" opacity="0.35" filter="url(#bokehBlurSmall)" />
+    <circle cx="790" cy="265" r="26" fill="#06b6d4" opacity="0.38" filter="url(#bokehBlurSmall)" />
+    <circle cx="420" cy="390" r="34" fill="#0ea5e9" opacity="0.28" filter="url(#bokehBlurMed)" />
+    <circle cx="880" cy="340" r="36" fill="#38bdf8" opacity="0.26" filter="url(#bokehBlurMed)" />
+    <circle cx="680" cy="160" r="22" fill="#67e8f9" opacity="0.4" filter="url(#bokehBlurSmall)" />
+
+    <!-- Soft Magenta & Violet Dust -->
+    <circle cx="480" cy="340" r="48" fill="#c026d3" opacity="0.2" filter="url(#bokehBlurMed)" />
+    <circle cx="800" cy="390" r="44" fill="#d946ef" opacity="0.2" filter="url(#bokehBlurMed)" />
+    <circle cx="640" cy="370" r="180" fill="#9333ea" opacity="0.25" filter="url(#bokehBlurLarge)" />
+  </g>
+
+  <!-- 3. Central Glowing Cannabis Leaf (7 Leaflets) -->
+  <g id="leaf-emblem" filter="url(#leafGlow)">
+    <!-- Leaf Stem -->
+    <path
+      d="M 635 500 C 632 550 626 590 642 610 C 648 590 645 550 645 500 Z"
+      fill="#4c1d95"
+      stroke="#c084fc"
+      stroke-width="3"
+    />
+
+    <!-- Lower Left Leaflet (7th) -->
+    <path
+      d="
+        M 575 440
+        L 530 460 L 542 447 L 498 460 L 518 440
+        L 480 447 L 505 422 L 474 422 L 506 397
+        C 519 384 563 397 594 422
+        Z
+      "
+      fill="url(#purpleLeafGrad)"
+      stroke="#c084fc"
+      stroke-width="3.5"
+      stroke-linejoin="round"
+    />
+
+    <!-- Lower Right Leaflet (6th) -->
+    <path
+      d="
+        M 705 440
+        L 750 460 L 738 447 L 782 460 L 762 440
+        L 800 447 L 775 422 L 806 422 L 774 397
+        C 761 384 717 397 686 422
+        Z
+      "
+      fill="url(#purpleLeafGrad)"
+      stroke="#c084fc"
+      stroke-width="3.5"
+      stroke-linejoin="round"
+    />
+
+    <!-- Middle Left Leaflet (5th) -->
+    <path
+      d="
+        M 588 403
+        L 525 396 L 544 378 L 481 378 L 506 353
+        L 438 346 L 475 321 L 419 303 L 469 284
+        L 431 265 L 488 259 L 463 240 L 519 240
+        C 550 271 581 328 600 378
+        Z
+      "
+      fill="url(#purpleLeafGrad)"
+      stroke="#c084fc"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+
+    <!-- Middle Right Leaflet (4th) -->
+    <path
+      d="
+        M 692 403
+        L 755 396 L 736 378 L 799 378 L 774 353
+        L 842 346 L 805 321 L 861 303 L 811 284
+        L 849 265 L 792 259 L 817 240 L 761 240
+        C 730 271 699 328 680 378
+        Z
+      "
+      fill="url(#purpleLeafGrad)"
+      stroke="#c084fc"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+
+    <!-- Upper Left Leaflet (3rd) -->
+    <path
+      d="
+        M 608 353
+        L 576 290 L 589 271 L 539 227 L 564 215
+        L 520 171 L 551 158 L 508 114 L 558 120
+        L 545 95 L 583 108 L 583 83 L 614 114
+        C 627 164 627 252 621 328
+        Z
+      "
+      fill="url(#purpleLeafGrad)"
+      stroke="#c084fc"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+
+    <!-- Upper Right Leaflet (2nd) -->
+    <path
+      d="
+        M 672 353
+        L 704 290 L 691 271 L 741 227 L 716 215
+        L 760 171 L 729 158 L 772 114 L 722 120
+        L 735 95 L 697 108 L 697 83 L 666 114
+        C 653 164 653 252 659 328
+        Z
+      "
+      fill="url(#purpleLeafGrad)"
+      stroke="#c084fc"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+
+    <!-- Central Top Main Leaflet (1st) -->
+    <path
+      d="
+        M 621 340
+        L 615 265 L 602 246 L 617 215 L 605 196
+        L 622 158 L 609 140 L 627 102 L 617 90
+        L 640 65
+        L 663 90 L 653 102 L 671 140 L 658 158
+        L 675 196 L 663 215 L 678 246 L 665 265
+        L 659 340
+        Z
+      "
+      fill="url(#purpleLeafGrad)"
+      stroke="#f5d0fe"
+      stroke-width="4.5"
+      stroke-linejoin="round"
+    />
+
+    <!-- Central Rib & Vein Structure -->
+    <path d="M 640 70 L 640 330" stroke="url(#leafVeinGrad)" stroke-width="3" stroke-linecap="round" />
+    <path d="M 640 100 L 620 92 M 640 100 L 660 92" stroke="#e9d5ff" stroke-width="2" />
+    <path d="M 640 145 L 614 133 M 640 145 L 666 133" stroke="#e9d5ff" stroke-width="2" />
+    <path d="M 640 190 L 608 171 M 640 190 L 672 171" stroke="#e9d5ff" stroke-width="2" />
+    <path d="M 640 235 L 605 213 M 640 235 L 675 213" stroke="#e9d5ff" stroke-width="2" />
+    <path d="M 640 280 L 604 256 M 640 280 L 676 256" stroke="#e9d5ff" stroke-width="2" />
+
+    <!-- Lateral Ribs -->
+    <path d="M 628 328 L 545 100" stroke="url(#leafVeinGrad)" stroke-width="3" stroke-linecap="round" opacity="0.75" />
+    <path d="M 652 328 L 735 100" stroke="url(#leafVeinGrad)" stroke-width="3" stroke-linecap="round" opacity="0.75" />
+    <path d="M 615 353 L 445 278" stroke="url(#leafVeinGrad)" stroke-width="3" stroke-linecap="round" opacity="0.75" />
+    <path d="M 665 353 L 835 278" stroke="url(#leafVeinGrad)" stroke-width="3" stroke-linecap="round" opacity="0.75" />
+  </g>
+
+  <!-- 4. Central Circular Medallion Shield (Exact Brand Badge) -->
+  <g id="center-badge">
+    <!-- Deep Drop Shadow under medallion -->
+    <circle cx="640" cy="376" r="115" fill="#000000" opacity="0.75" />
+
+    <!-- Outer Silver Beveled Ring -->
+    <circle
+      cx="640"
+      cy="370"
+      r="110"
+      fill="url(#silverRingGrad)"
+      stroke="#2e1065"
+      stroke-width="4"
+    />
+
+    <!-- Inner Dark Accent Ring -->
+    <circle cx="640" cy="370" r="102" fill="#1e1b4b" />
+
+    <!-- Disc Interior: Deep Dark Violet Atmosphere -->
+    <circle
+      cx="640"
+      cy="370"
+      r="97"
+      fill="url(#badgeInnerDark)"
+      stroke="#c084fc"
+      stroke-width="2.5"
+    />
+
+    <!-- Subtle Center Glow -->
+    <circle cx="640" cy="370" r="97" fill="#a855f7" opacity="0.12" />
+
+    <!-- Miniature 5-Pointed Purple Leaf Accent above 'notme' -->
+    <g transform="translate(640, 306) scale(0.3)">
+      <path d="M 0 -45 C 14 -20 20 6 0 32 C -20 6 -14 -20 0 -45 Z" fill="#d8b4fe" />
+      <path d="M 0 6 C 20 -8 38 0 46 20 C 26 24 6 20 0 6 Z" fill="#c084fc" />
+      <path d="M 0 6 C -20 -8 -38 0 -46 20 C -26 24 -6 20 0 6 Z" fill="#c084fc" />
+      <path d="M 0 16 C 16 10 30 22 32 38 C 16 36 4 28 0 16 Z" fill="#a855f7" />
+      <path d="M 0 16 C -16 10 -30 22 -32 38 C -16 36 -4 28 0 16 Z" fill="#a855f7" />
+    </g>
+
+    <!-- Logo Text: 'notme' (Bold, Crisp White) -->
+    <text
+      x="640"
+      y="356"
+      text-anchor="middle"
+      fill="#ffffff"
+      font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif"
+      font-weight="800"
+      font-size="42"
+      letter-spacing="-0.8px"
+      filter="drop-shadow(0 2px 4px rgba(0,0,0,0.9))"
+    >
+      notme
+    </text>
+
+    <!-- Logo Text: '209' (Extra-Bold Large White Numbers with soft bevel) -->
+    <text
+      x="640"
+      y="428"
+      text-anchor="middle"
+      fill="#ffffff"
+      font-family="'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif"
+      font-weight="900"
+      font-size="68"
+      letter-spacing="1.5px"
+      stroke="#f5d0fe"
+      stroke-width="1.2"
+      filter="drop-shadow(0 5px 10px rgba(0,0,0,0.95))"
+    >
+      209
+    </text>
+  </g>
+</svg>

@@ -62,8 +62,9 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'sour-space-candy',
     name: 'Sour Space Candy',
     tag: 'Hybrid · Living Soil Clone',
-    desc: 'Exquisite seedless buds boasting vivid deep violet calyxes blanketed in frosty crystalline trichomes, accented with twisting copper-orange stigmas and pungent candied diesel terpenes.',
+    desc: 'Exquisite seedless buds boasting vivid deep violet calyxes blanketed in frosty crystalline trichomes, accented with twisting copper-orange stigmas and pungent candied diesel terpenes. Pair photos: cured flower and collectible bag art.',
     img: '/sour-space-candy.jpg',
+    imgs: ['/sour-space-candy.jpg', '/sour-space-candy-2.jpg'],
     cbdPercent: 20.2,
     thcPercent: 0.18,
     terpenes: [
@@ -100,8 +101,9 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'cakeboss',
     name: 'CakeBoss',
     tag: 'Hybrid · Frosted Cake',
-    desc: 'Pale-green frosty nugs with sparse amber pistils and a softly sweet cake aroma.',
+    desc: 'Pale-green frosty nugs with sparse amber pistils and a softly sweet cake aroma. Pair photos: nug close-up and collectible bag art.',
     img: '/cakeboss.jpg',
+    imgs: ['/cakeboss.jpg', '/cakeboss-2.jpg'],
     cbdPercent: 18.4,
     thcPercent: 0.15,
     terpenes: [

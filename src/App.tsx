@@ -12,60 +12,77 @@ const PRESET_NUG_PHOTOS = [
   { name: 'Sunset Sherbert · Frosty Purple & Amber Pistils (User Uploaded)', url: '/sunset-sherbert.jpg' },
   { name: 'Harlequin · Frosty Floral Spear on Black (User Uploaded)', url: '/harlequin.jpg' },
   { name: 'Sour Space Candy · Frosty Purple & Amber Pistils (User Uploaded)', url: '/sour-space-candy.jpg' },
+  { name: 'Sour Space Candy · Collectible Bag Art (User Uploaded)', url: '/sour-space-candy-2.jpg' },
   { name: 'Cupcake · Frosty Dessert Nug', url: '/cupcake.jpg' },
   { name: 'CakeBoss · Pale Frost Cake', url: '/cakeboss.jpg' },
+  { name: 'CakeBoss · Collectible Bag Art (User Uploaded)', url: '/cakeboss-2.jpg' },
   { name: 'Gelatti · Purple Gelato Cross', url: '/gelatti.jpg' },
   { name: 'Chicken & Waffles · Purple Frosted Hybrid', url: '/chicken-waffles-1.jpg' },
+  { name: 'Chicken & Waffles · Collectible Bag Art', url: '/chicken-waffles-2.jpg' },
   { name: 'Venom Runtz · Frosty Hybrid', url: '/venom-runtz.jpg' },
   { name: 'L.A. 99 · Premium Frosted Hybrid', url: '/la-99-2.jpg' },
+  { name: 'L.A. 99 · Collectible Bag Art', url: '/la-99-1.jpg' },
   { name: 'Diamond Trichome Sinsemilla with Amber Pistils', url: 'https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=1000&q=85' },
 ];
 
 const WHATSAPP_NUMBER = '12095550192';
 
 export default function App() {
-  // Strains state persisted in localStorage
+  // Strains state persisted in localStorage with guaranteed sync for default strains
   const [strains, setStrains] = useState<Strain[]>(() => {
     try {
       const saved = localStorage.getItem('verdant_strains');
       if (saved) {
         const list: Strain[] = JSON.parse(saved);
+        const defaultMap = new Map(DEFAULT_STRAINS.map((d) => [d.id, d]));
         const mapped = list.map((s) => {
-          if (s.id === 'sunset-sherbert' && (!s.img || s.img.includes('1568644396922'))) {
+          const sid = s.id === 'cake-boss' ? 'cakeboss' : s.id;
+          const def = defaultMap.get(sid);
+          if (def) {
             return {
               ...s,
-              img: '/sunset-sherbert.jpg',
-              desc: 'Dense, royal purple and deep violet calyxes blanketed in crystalline milky resin trichomes, accented by vibrant curly copper-orange pistils and sweet dessert terpenes.',
-              phenotypeAppearance: 'Rich royal purple calyx clusters encrusted with frosty white diamond trichomes and twisting amber-orange stigmas.',
-            };
-          }
-          if (s.id === 'sour-space-candy' && (!s.img || s.img.includes('unsplash'))) {
-            return {
-              ...s,
-              img: '/sour-space-candy.jpg',
-              desc: 'Exquisite seedless buds boasting vivid deep violet calyxes blanketed in frosty crystalline trichomes, accented with twisting copper-orange stigmas and pungent candied diesel terpenes.',
-              phenotypeAppearance: 'Dense conical nugs with deep purple calyx clusters encrusted with frosty white diamond trichomes and amber-orange pistils.',
-            };
-          }
-          if (s.id === 'harlequin' && (!s.img || s.img.includes('unsplash'))) {
-            return {
-              ...s,
-              img: '/harlequin.jpg',
-              desc: 'Iconic sativa-dominant floral spear with frosty crystalline sugar leaves and stacked calyxes blanketed in glistening glandular trichomes, accented by delicate golden-amber stigmas.',
-              phenotypeAppearance: 'Towering conical floral spear heavily encrusted in crystalline trichomes with vibrant botanical green calyxes and frosty serrated sugar leaves.',
+              id: sid,
+              name: def.name,
+              desc: def.desc,
+              img: def.img,
+              imgs: def.imgs && def.imgs.length > 0 ? def.imgs : [def.img],
+              phenotypeAppearance: def.phenotypeAppearance,
             };
           }
           return s;
         });
-        const merged = mapped;
-        const have = new Set(merged.map((x) => x.id));
-        return [...merged, ...DEFAULT_STRAINS.filter((d) => !have.has(d.id))];
+        const have = new Set(mapped.map((x) => x.id));
+        const merged = [...mapped, ...DEFAULT_STRAINS.filter((d) => !have.has(d.id))];
+        try {
+          localStorage.setItem('verdant_strains', JSON.stringify(merged));
+        } catch {
+          // ignore
+        }
+        return merged;
       }
     } catch {
       // fallback
     }
+    try {
+      localStorage.setItem('verdant_strains', JSON.stringify(DEFAULT_STRAINS));
+    } catch {
+      // ignore
+    }
     return DEFAULT_STRAINS;
   });
+
+  // Preload all strain images so carousel arrow switches are instant and never fail
+  useEffect(() => {
+    strains.forEach((s) => {
+      const photos = s.imgs && s.imgs.length > 0 ? s.imgs : [s.img];
+      photos.forEach((src) => {
+        if (src && typeof src === 'string') {
+          const img = new Image();
+          img.src = src;
+        }
+      });
+    });
+  }, [strains]);
 
   const [selectedStrain, setSelectedStrain] = useState<Strain>(() => strains[0] || DEFAULT_STRAINS[0]);
 
@@ -76,6 +93,23 @@ export default function App() {
   // Edit Mode state ("the menu shows edit utton fro image n the name of it n tyhats it. more visual then info")
   const [isEditing, setIsEditing] = useState(false);
   const [editingStrain, setEditingStrain] = useState<Strain | null>(null);
+  const [editFormName, setEditFormName] = useState('');
+  const [editFormPhotos, setEditFormPhotos] = useState<string[]>([]);
+  const [editPhotoSlot, setEditPhotoSlot] = useState<number>(0);
+  const [hasUploadedNewPhoto, setHasUploadedNewPhoto] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Open Edit Modal with isolated draft state
+  const openEditModal = (strain: Strain) => {
+    setEditingStrain(strain);
+    setEditFormName(strain.name);
+    const photos = strain.imgs && strain.imgs.length > 0
+      ? [...strain.imgs]
+      : [strain.img || PRESET_NUG_PHOTOS[0].url];
+    setEditFormPhotos(photos);
+    setEditPhotoSlot(0);
+    setHasUploadedNewPhoto(false);
+  };
 
   // 3D Nug Turntable & Macro Inspection viewer state
   const [lightboxStrain, setLightboxStrain] = useState<Strain | null>(null);
@@ -134,8 +168,8 @@ export default function App() {
     setLightboxStrain(null);
   };
 
-  // Compress & save uploaded photo
-  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>, strainId: string) => {
+  // Compress & preview uploaded photo in active slot
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -153,16 +187,73 @@ export default function App() {
         if (ctx) {
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          const updated = strains.map((s) => (s.id === strainId ? { ...s, img: dataUrl } : s));
-          saveStrains(updated);
-          if (editingStrain?.id === strainId) {
-            setEditingStrain({ ...editingStrain, img: dataUrl });
-          }
+          setEditFormPhotos((prev) => {
+            const next = prev.length > 0 ? [...prev] : [dataUrl];
+            next[editPhotoSlot] = dataUrl;
+            return next;
+          });
+          setHasUploadedNewPhoto(true);
         }
       };
       img.src = reader.result as string;
     };
     reader.readAsDataURL(file);
+  };
+
+  // Select preset photo for active slot
+  const handleSelectPreset = (url: string) => {
+    playSoftClick();
+    setEditFormPhotos((prev) => {
+      const next = prev.length > 0 ? [...prev] : [url];
+      next[editPhotoSlot] = url;
+      return next;
+    });
+    setHasUploadedNewPhoto(true);
+  };
+
+  // Explicit Save & Move On: updates name, primary img, and imgs array
+  const handleSaveAndMoveOn = () => {
+    if (!editingStrain) return;
+    playWaterDrop();
+
+    const cleanedPhotos = editFormPhotos.filter(Boolean);
+    const finalPrimaryImg = cleanedPhotos[0] || editingStrain.img || PRESET_NUG_PHOTOS[0].url;
+    const finalName = editFormName.trim() || editingStrain.name;
+
+    const updated = strains.map((s) => {
+      if (s.id === editingStrain.id) {
+        return {
+          ...s,
+          name: finalName,
+          img: finalPrimaryImg,
+          imgs: cleanedPhotos.length > 0 ? cleanedPhotos : [finalPrimaryImg],
+        };
+      }
+      return s;
+    });
+
+    saveStrains(updated);
+    setEditingStrain(null);
+    setHasUploadedNewPhoto(false);
+
+    setToastMessage(`Saved ${finalName}!`);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
+  // Delete strain with verification
+  const handleDeleteStrain = () => {
+    if (!editingStrain) return;
+    if (strains.length <= 1) {
+      alert('You must keep at least one strain in the menu.');
+      return;
+    }
+    if (window.confirm(`Delete ${editingStrain.name}?`)) {
+      const updated = strains.filter((s) => s.id !== editingStrain.id);
+      saveStrains(updated);
+      setEditingStrain(null);
+    }
   };
 
   // Launch WhatsApp
@@ -174,31 +265,41 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0f120d] text-[#ece4d3] flex flex-col select-none font-sans overflow-x-hidden">
+      {/* Success Notification Toast */}
+      {toastMessage && (
+        <div className="fixed top-18 right-4 z-50 bg-[#1a2416] border border-[#c9a227] text-[#ece4d3] px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-mono pointer-events-none">
+          <span className="w-5 h-5 rounded-full bg-[#c9a227] text-[#12160f] flex items-center justify-center font-bold text-xs">
+            ✓
+          </span>
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Hero Load-Up Page with the purple notme 209 emblem */}
       {showIntro && <HeroLoadUpScreen onComplete={() => setShowIntro(false)} />}
 
       {/* ========================================================================= */}
       {/* 1. TOP STICKY NAVIGATION                                                  */}
       {/* ========================================================================= */}
-      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-4 sm:px-8 py-3 bg-[#0f120d]/85 backdrop-blur-md border-b border-[#ece4d3]/10 transition-all">
+      <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-3 sm:px-8 py-2.5 sm:py-3 bg-[#0f120d]/85 backdrop-blur-md border-b border-[#ece4d3]/10 transition-all">
         {/* Brand: notme 209 Logo Emblem & Typography */}
         <button
           type="button"
           onClick={() => scrollToSection('home')}
-          className="flex items-center gap-2.5 hover:opacity-90 cursor-pointer bg-transparent border-none group text-left"
+          className="flex items-center gap-2 sm:gap-2.5 hover:opacity-90 cursor-pointer bg-transparent border-none group text-left flex-shrink-0"
           title="notme 209 Artisanal CBD"
         >
-          <div className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center bg-[#170c24] border border-purple-500/40 group-hover:border-purple-400/80 shadow-[0_0_12px_rgba(192,132,252,0.3)] transition-all">
-            <NotMe209Logo size={32} showGlow={false} />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden flex items-center justify-center bg-[#170c24] border border-purple-500/40 group-hover:border-purple-400/80 shadow-[0_0_12px_rgba(192,132,252,0.3)] transition-all">
+            <NotMe209Logo size={28} showGlow={false} />
           </div>
-          <div className="flex items-baseline gap-1 text-xl sm:text-2xl font-bold tracking-tight text-[#ece4d3]">
+          <div className="flex items-baseline gap-0.5 sm:gap-1 text-lg sm:text-2xl font-bold tracking-tight text-[#ece4d3]">
             <span>notme</span>
             <span className="text-[#c084fc]">209</span>
           </div>
         </button>
 
         {/* Center Nav Links */}
-        <div className="flex items-center gap-5 sm:gap-8">
+        <div className="flex items-center gap-3 sm:gap-8">
           <button
             type="button"
             onClick={() => scrollToSection('home')}
@@ -240,7 +341,7 @@ export default function App() {
         </div>
 
         {/* Right Nav Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
           {/* Replay Intro Hero Screen */}
           <button
             type="button"
@@ -249,11 +350,11 @@ export default function App() {
               setShowIntro(true);
             }}
             title="Replay notme 209 logo hero intro"
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-full border border-purple-500/30 text-[#c084fc] hover:border-purple-400 hover:text-white hover:bg-purple-900/30 transition-all cursor-pointer"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 text-[11px] sm:text-xs font-mono rounded-full border border-purple-500/30 text-[#c084fc] hover:border-purple-400 hover:text-white hover:bg-purple-900/30 transition-all cursor-pointer"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#c084fc] animate-pulse" />
-            <span className="hidden xs:inline">Hero Intro</span>
-            <span className="xs:hidden">Intro</span>
+            <span className="hidden sm:inline">Hero Intro</span>
+            <span className="sm:hidden">Intro</span>
           </button>
           {/* Sound Mute/Unmute */}
           <button
@@ -367,9 +468,10 @@ export default function App() {
                     id: newId,
                     name: 'New Artisanal Phenotype',
                     img: PRESET_NUG_PHOTOS[0].url,
+                    imgs: [PRESET_NUG_PHOTOS[0].url],
                   };
                   saveStrains([...strains, newStrain]);
-                  setEditingStrain(newStrain);
+                  openEditModal(newStrain);
                 }}
                 className="px-3.5 py-1.5 rounded-full text-xs font-mono bg-[#1c2418] hover:bg-[#2a3322] border border-[#ece4d3]/20 hover:border-[#c9a227] text-[#ece4d3] transition-all cursor-pointer"
               >
@@ -411,9 +513,9 @@ export default function App() {
         {/* Strain Card Grid: PURE VISUALS (Photo + Name + Edit + WhatsApp) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {strains.map((s) => {
-            const photos = s.imgs && s.imgs.length ? s.imgs : [s.img || PRESET_NUG_PHOTOS[0].url];
-            const photoIndex = Math.min(photoIndexes[s.id] ?? 0, photos.length - 1);
-            const displayImg = photos[photoIndex];
+            const photos = (s.imgs && s.imgs.length > 0 ? s.imgs : [s.img || PRESET_NUG_PHOTOS[0].url]).filter(Boolean);
+            const photoIndex = Math.min(Math.max(0, photoIndexes[s.id] ?? 0), Math.max(0, photos.length - 1));
+            const displayImg = photos[photoIndex] || s.img || PRESET_NUG_PHOTOS[0].url;
 
             return (
               <article
@@ -427,9 +529,11 @@ export default function App() {
                   title="Click to zoom and inspect trichomes"
                 >
                   <img
+                    key={`${s.id}-${photoIndex}`}
                     src={displayImg}
-                    alt={s.name}
-                    className="w-full h-full object-contain filter contrast-[1.08] saturate-[1.08] drop-shadow-[0_15px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-500 ease-out"
+                    alt={`${s.name} - Photo ${photoIndex + 1}`}
+                    loading="eager"
+                    className="w-full h-full object-contain filter contrast-[1.08] saturate-[1.08] drop-shadow-[0_15px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-500 ease-out pointer-events-none"
                   />
 
                   {photos.length > 1 && (
@@ -438,10 +542,16 @@ export default function App() {
                         type="button"
                         aria-label="Previous photo"
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
-                          setPhotoIndexes((prev) => ({ ...prev, [s.id]: (photoIndex - 1 + photos.length) % photos.length }));
+                          playSoftClick();
+                          setPhotoIndexes((prev) => {
+                            const cur = prev[s.id] ?? 0;
+                            const nextIdx = (cur - 1 + photos.length) % photos.length;
+                            return { ...prev, [s.id]: nextIdx };
+                          });
                         }}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-[#0f120d]/80 border border-[#ece4d3]/30 text-[#ece4d3] text-2xl leading-none hover:bg-[#c9a227] hover:text-[#12160f] transition-colors"
+                        className="absolute left-2.5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-[#0f120d]/90 border border-[#ece4d3]/50 text-[#ece4d3] text-2xl leading-none hover:bg-[#c9a227] hover:text-[#12160f] hover:border-[#c9a227] transition-all cursor-pointer flex items-center justify-center shadow-2xl active:scale-90"
                       >
                         ‹
                       </button>
@@ -449,13 +559,45 @@ export default function App() {
                         type="button"
                         aria-label="Next photo"
                         onClick={(e) => {
+                          e.preventDefault();
                           e.stopPropagation();
-                          setPhotoIndexes((prev) => ({ ...prev, [s.id]: (photoIndex + 1) % photos.length }));
+                          playSoftClick();
+                          setPhotoIndexes((prev) => {
+                            const cur = prev[s.id] ?? 0;
+                            const nextIdx = (cur + 1) % photos.length;
+                            return { ...prev, [s.id]: nextIdx };
+                          });
                         }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-[#0f120d]/80 border border-[#ece4d3]/30 text-[#ece4d3] text-2xl leading-none hover:bg-[#c9a227] hover:text-[#12160f] transition-colors"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 z-30 w-11 h-11 rounded-full bg-[#0f120d]/90 border border-[#ece4d3]/50 text-[#ece4d3] text-2xl leading-none hover:bg-[#c9a227] hover:text-[#12160f] hover:border-[#c9a227] transition-all cursor-pointer flex items-center justify-center shadow-2xl active:scale-90"
                       >
                         ›
                       </button>
+
+                      {/* Photo Badge & Indicator Dots */}
+                      <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-[#0f120d]/90 backdrop-blur-md border border-[#ece4d3]/25 shadow-xl">
+                        <span className="text-[10px] font-mono text-[#c9a227] font-semibold uppercase tracking-wider whitespace-nowrap">
+                          {photoIndex === 0 ? 'Photo 1 · Cured Nug' : 'Photo 2 · Reserve Bag'}
+                        </span>
+                        <div className="flex items-center gap-1.5 ml-1">
+                          {photos.map((_, pIdx) => (
+                            <button
+                              key={pIdx}
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setPhotoIndexes((prev) => ({ ...prev, [s.id]: pIdx }));
+                              }}
+                              aria-label={`Go to photo ${pIdx + 1}`}
+                              className={`transition-all rounded-full cursor-pointer ${
+                                pIdx === photoIndex
+                                  ? 'w-3.5 h-1.5 bg-[#c9a227]'
+                                  : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </>
                   )}
 
@@ -515,7 +657,7 @@ export default function App() {
                       type="button"
                       onClick={() => {
                         playSoftClick();
-                        setEditingStrain(s);
+                        openEditModal(s);
                       }}
                       className="px-3 py-1 rounded-full text-[11px] font-mono bg-[#1f2a1a] hover:bg-[#2c3d25] text-[#ece4d3] border border-[#ece4d3]/15 hover:border-[#c9a227] transition-all cursor-pointer"
                     >
@@ -588,125 +730,201 @@ export default function App() {
       {/* ========================================================================= */}
       {editingStrain && (
         <div
-          className="fixed inset-0 z-50 bg-[#000000]/80 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-[#000000]/85 backdrop-blur-md flex items-center justify-center p-4"
           onClick={() => setEditingStrain(null)}
         >
           <div
-            className="bg-[#151b13] border border-[#ece4d3]/20 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-5"
+            className="bg-[#151b13] border border-[#ece4d3]/20 rounded-2xl max-w-lg w-full p-5 sm:p-6 shadow-2xl flex flex-col gap-4 max-h-[92vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-[#ece4d3]/10 pb-3">
-              <h3 className="font-serif text-xl text-[#ece4d3]">Edit Strain</h3>
+              <div>
+                <h3 className="font-serif text-xl text-[#ece4d3]">Edit Strain</h3>
+                <p className="text-[11px] font-mono text-[#8b9584] mt-0.5">
+                  Update flower photo, collectible baggie, or strain name
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => setEditingStrain(null)}
-                className="text-[#8b9584] hover:text-[#ece4d3] p-1 cursor-pointer bg-transparent border-none"
+                className="w-8 h-8 rounded-full bg-[#1c2418] hover:bg-[#2a3322] border border-[#ece4d3]/15 text-[#8b9584] hover:text-[#ece4d3] flex items-center justify-center text-sm cursor-pointer transition-colors"
+                aria-label="Close"
               >
                 ✕
               </button>
             </div>
 
-            {/* Current Image Preview */}
-            <div className="aspect-[16/9] rounded-lg overflow-hidden bg-[#0f120d] border border-[#ece4d3]/15 flex items-center justify-center p-3">
-              <img
-                src={editingStrain.img || PRESET_NUG_PHOTOS[0].url}
-                alt={editingStrain.name}
-                className="w-full h-full object-contain filter contrast-[1.08] saturate-[1.08]"
-              />
+            {/* Photo Slot Tabs (Photo 1 · Cured Flower vs Photo 2 · Reserve Bag) */}
+            <div className="flex items-center gap-2 bg-[#0f120d] p-1 rounded-xl border border-[#ece4d3]/10">
+              <button
+                type="button"
+                onClick={() => setEditPhotoSlot(0)}
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  editPhotoSlot === 0
+                    ? 'bg-[#c9a227] text-[#12160f] font-bold shadow-md'
+                    : 'text-[#8b9584] hover:text-[#ece4d3]'
+                }`}
+              >
+                <span>Slot 1: Flower Nug</span>
+                {editFormPhotos[0] && <span className="w-1.5 h-1.5 rounded-full bg-current"></span>}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditPhotoSlot(1);
+                  if (!editFormPhotos[1]) {
+                    setEditFormPhotos((prev) => [...prev, '/cakeboss-2.jpg']);
+                  }
+                }}
+                className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-mono transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  editPhotoSlot === 1
+                    ? 'bg-[#c9a227] text-[#12160f] font-bold shadow-md'
+                    : 'text-[#8b9584] hover:text-[#ece4d3]'
+                }`}
+              >
+                <span>Slot 2: Reserve Bag</span>
+                {editFormPhotos[1] && <span className="w-1.5 h-1.5 rounded-full bg-current"></span>}
+              </button>
             </div>
+
+            {/* Current Image Preview */}
+            <div className="aspect-[16/9] relative rounded-xl overflow-hidden bg-gradient-to-b from-[#232a1e] to-[#0f120d] border border-[#ece4d3]/15 flex items-center justify-center p-3 shadow-inner">
+              <img
+                src={editFormPhotos[editPhotoSlot] || PRESET_NUG_PHOTOS[0].url}
+                alt={editFormName || 'Preview'}
+                className="w-full h-full object-contain filter contrast-[1.08] saturate-[1.08] drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
+              />
+
+              {/* Slot Badge */}
+              <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-md bg-[#0f120d]/85 border border-[#ece4d3]/20 text-[10px] font-mono text-[#c9a227] shadow-md">
+                {editPhotoSlot === 0 ? 'Photo 1 · Cured Nug' : 'Photo 2 · Reserve Bag'}
+              </div>
+
+              {/* Status Alert Badge */}
+              {hasUploadedNewPhoto && (
+                <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#1c2418]/95 border border-[#c9a227] text-[10px] font-mono font-bold text-[#c9a227] shadow-lg flex items-center gap-1.5 animate-pulse">
+                  <span>✓</span>
+                  <span>New Photo Loaded</span>
+                </div>
+              )}
+            </div>
+
+            {/* PROMINENT SAVE BUTTON RIGHT AFTER UPLOAD */}
+            {hasUploadedNewPhoto && (
+              <div className="bg-[#1f281b] border-2 border-[#c9a227] rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[0_0_20px_rgba(201,162,39,0.25)] animate-in fade-in duration-200">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 rounded-full bg-[#c9a227] text-[#12160f] flex items-center justify-center font-bold text-xs">
+                    ✓
+                  </div>
+                  <div>
+                    <div className="text-xs font-mono font-bold text-[#ece4d3]">Photo uploaded & ready</div>
+                    <div className="text-[11px] font-mono text-[#8b9584]">
+                      Assigned to {editPhotoSlot === 0 ? 'Photo 1 (Flower)' : 'Photo 2 (Bag)'}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveAndMoveOn}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-lg text-xs font-mono font-bold bg-[#c9a227] hover:bg-[#e0c056] text-[#12160f] shadow-lg flex items-center justify-center gap-1.5 cursor-pointer transition-all active:scale-95"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>Save & Move On</span>
+                </button>
+              </div>
+            )}
 
             {/* Strain Name Input */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-mono text-[#8b9584]">Strain Name</label>
               <input
                 type="text"
-                value={editingStrain.name}
-                onChange={(e) => {
-                  const updatedName = e.target.value;
-                  setEditingStrain({ ...editingStrain, name: updatedName });
-                  const updated = strains.map((s) =>
-                    s.id === editingStrain.id ? { ...s, name: updatedName } : s
-                  );
-                  saveStrains(updated);
-                }}
-                className="bg-[#0f120d] border border-[#c9a227]/50 rounded-lg px-3.5 py-2 text-sm text-[#ece4d3] focus:outline-none focus:border-[#c9a227]"
+                value={editFormName}
+                onChange={(e) => setEditFormName(e.target.value)}
+                placeholder="e.g. Central Valley Reserve"
+                className="bg-[#0f120d] border border-[#ece4d3]/20 focus:border-[#c9a227] rounded-lg px-3.5 py-2 text-sm text-[#ece4d3] focus:outline-none transition-colors"
               />
             </div>
 
-            {/* Change Image Options */}
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-mono text-[#8b9584]">Change Image</label>
+            {/* Upload Photo Options */}
+            <div className="flex flex-col gap-2.5">
+              <label className="text-xs font-mono text-[#8b9584]">Upload or Select Image</label>
 
-              {/* 1. Upload from Device */}
-              <label className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-mono bg-[#1c2418] hover:bg-[#2a3322] border border-[#ece4d3]/20 hover:border-[#c9a227] text-[#ece4d3] transition-colors cursor-pointer text-center">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21 15 16 10 5 21" />
+              {/* 1. Upload from Device Button */}
+              <label className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-xs font-mono font-semibold bg-[#1c2418] hover:bg-[#273322] border border-[#ece4d3]/25 hover:border-[#c9a227] text-[#ece4d3] transition-all cursor-pointer text-center shadow-md">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
                 <span>Upload Photo from Device</span>
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageFileUpload(e, editingStrain.id)}
+                  onClick={(e) => {
+                    (e.target as HTMLInputElement).value = '';
+                  }}
+                  onChange={handleImageFileUpload}
                   className="hidden"
                 />
               </label>
 
               {/* 2. Choose from Frosty Cured Nug Presets */}
-              <div className="grid grid-cols-4 gap-2 mt-1">
-                {PRESET_NUG_PHOTOS.map((p, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      setEditingStrain({ ...editingStrain, img: p.url });
-                      const updated = strains.map((s) =>
-                        s.id === editingStrain.id ? { ...s, img: p.url } : s
-                      );
-                      saveStrains(updated);
-                    }}
-                    className={`aspect-square rounded-md overflow-hidden border p-0.5 bg-[#0f120d] transition-all cursor-pointer ${
-                      editingStrain.img === p.url
-                        ? 'border-[#c9a227] shadow-[0_0_8px_rgba(201,162,39,0.5)]'
-                        : 'border-[#ece4d3]/15 hover:border-[#ece4d3]/40'
-                    }`}
-                    title={p.name}
-                  >
-                    <img src={p.url} alt={p.name} className="w-full h-full object-cover rounded" />
-                  </button>
-                ))}
+              <div className="flex flex-col gap-1.5 mt-1">
+                <span className="text-[11px] font-mono text-[#8b9584]">Or select cured nug preset:</span>
+                <div className="grid grid-cols-4 gap-2">
+                  {PRESET_NUG_PHOTOS.map((p, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSelectPreset(p.url)}
+                      className={`aspect-square rounded-lg overflow-hidden border p-0.5 bg-[#0f120d] transition-all cursor-pointer ${
+                        editFormPhotos[editPhotoSlot] === p.url
+                          ? 'border-[#c9a227] shadow-[0_0_10px_rgba(201,162,39,0.5)]'
+                          : 'border-[#ece4d3]/15 hover:border-[#ece4d3]/40'
+                      }`}
+                      title={p.name}
+                    >
+                      <img src={p.url} alt={p.name} className="w-full h-full object-cover rounded-md" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Modal Bottom Actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-[#ece4d3]/10">
+            <div className="flex items-center justify-between pt-3 border-t border-[#ece4d3]/10 mt-1">
               <button
                 type="button"
-                onClick={() => {
-                  if (strains.length <= 1) {
-                    alert('You must keep at least one strain in the menu.');
-                    return;
-                  }
-                  if (window.confirm(`Delete ${editingStrain.name}?`)) {
-                    const updated = strains.filter((s) => s.id !== editingStrain.id);
-                    saveStrains(updated);
-                    setEditingStrain(null);
-                  }
-                }}
+                onClick={handleDeleteStrain}
                 className="text-xs font-mono text-[#c46a52] hover:underline cursor-pointer bg-transparent border-none"
               >
                 Delete Strain
               </button>
 
-              <button
-                type="button"
-                onClick={() => setEditingStrain(null)}
-                className="px-5 py-1.5 rounded-full text-xs font-mono font-medium bg-[#c9a227] text-[#12160f] hover:bg-[#e0c056] cursor-pointer"
-              >
-                Done
-              </button>
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setEditingStrain(null)}
+                  className="px-4 py-2 rounded-full text-xs font-mono text-[#8b9584] hover:text-[#ece4d3] border border-[#ece4d3]/15 hover:border-[#ece4d3]/30 cursor-pointer bg-transparent transition-colors"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleSaveAndMoveOn}
+                  className="px-6 py-2 rounded-full text-xs font-mono font-bold bg-[#c9a227] text-[#12160f] hover:bg-[#e0c056] active:scale-95 transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span>Save & Move On</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

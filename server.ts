@@ -345,6 +345,9 @@ Return valid JSON:
   }
 });
 
+// Static asset serving from public
+app.use(express.static(path.join(process.cwd(), "public")));
+
 // Vite middleware in dev or static files in production
 async function startServer() {
   if (process.env.NODE_ENV !== "production") {
