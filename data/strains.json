@@ -1,0 +1,136 @@
+[
+  {
+    "id": "sunset-sherbert",
+    "name": "Sunset Sherbert",
+    "tag": "Indica-Dominant · Cold Cured",
+    "desc": "Dense, royal purple and deep violet calyxes blanketed in crystalline milky resin trichomes, accented by vibrant curly copper-orange pistils and sweet dessert terpenes.",
+    "img": "/sunset-sherbert.jpg",
+    "imgs": [
+      "/sunset-sherbert.jpg"
+    ],
+    "cbdPercent": 18.8,
+    "thcPercent": 0.14,
+    "phenotypeAppearance": "Rich royal purple calyx clusters encrusted with frosty white diamond trichomes and twisting amber-orange stigmas."
+  },
+  {
+    "id": "northern-lights",
+    "name": "Northern Lights",
+    "tag": "Indica · Heirloom Clone",
+    "desc": "Dense, frosty hand-trimmed buds featuring forest greens and delicate lavender hues, blanketed in crystalline milky resin heads.",
+    "img": "https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=800&q=80",
+    "imgs": [
+      "https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=800&q=80"
+    ],
+    "cbdPercent": 19.4,
+    "thcPercent": 0.16,
+    "phenotypeAppearance": "Tight green bract clusters with light purple sugar leaf accents and heavy resin sheen."
+  },
+  {
+    "id": "harlequin",
+    "name": "Harlequin",
+    "tag": "Sativa-Dominant · Select Phenotype",
+    "desc": "Iconic sativa-dominant floral spear with frosty crystalline sugar leaves and stacked calyxes blanketed in glistening glandular trichomes, accented by delicate golden-amber stigmas.",
+    "img": "/harlequin.jpg",
+    "imgs": [
+      "/harlequin.jpg"
+    ],
+    "cbdPercent": 17.6,
+    "thcPercent": 0.12,
+    "phenotypeAppearance": "Towering conical floral spear heavily encrusted in crystalline trichomes with vibrant botanical green calyxes and frosty serrated sugar leaves."
+  },
+  {
+    "id": "sour-space-candy",
+    "name": "Sour Space Candy",
+    "tag": "Hybrid · Living Soil Clone",
+    "desc": "Exquisite seedless buds boasting vivid deep violet calyxes blanketed in frosty crystalline trichomes, accented with twisting copper-orange stigmas and pungent candied diesel terpenes. Pair photos: cured flower and collectible bag art.",
+    "img": "/sour-space-candy.jpg",
+    "imgs": [
+      "/sour-space-candy.jpg",
+      "/sour-space-candy-2.jpg"
+    ],
+    "cbdPercent": 20.2,
+    "thcPercent": 0.18,
+    "phenotypeAppearance": "Dense conical nugs with deep purple calyx clusters encrusted with frosty white diamond trichomes and amber-orange pistils."
+  },
+  {
+    "id": "cupcake",
+    "name": "Cupcake",
+    "tag": "Hybrid · Dessert Cure",
+    "desc": "Frosty conical nugs with bright orange pistils and sweet dessert terpenes.",
+    "img": "/cupcake.jpg",
+    "imgs": [
+      "/cupcake.jpg"
+    ],
+    "cbdPercent": 18.2,
+    "thcPercent": 0.16,
+    "phenotypeAppearance": "Frosty conical nug with vivid orange pistils and dense milky trichomes."
+  },
+  {
+    "id": "cakeboss",
+    "name": "CakeBoss",
+    "tag": "Hybrid · Frosted Cake",
+    "desc": "Pale-green frosty nugs with sparse amber pistils and a softly sweet cake aroma. Pair photos: nug close-up and collectible bag art.",
+    "img": "/cakeboss.jpg",
+    "imgs": [
+      "/cakeboss.jpg",
+      "/cakeboss-2.jpg"
+    ],
+    "cbdPercent": 18.4,
+    "thcPercent": 0.15,
+    "phenotypeAppearance": "Pale-green frosty nug with compact bracts and sparse amber pistils."
+  },
+  {
+    "id": "gelatti",
+    "name": "Gelatti",
+    "tag": "Hybrid · Gelato Cross",
+    "desc": "Purple and green frosty nugs with curling orange pistils and rich dessert-gas terpenes.",
+    "img": "/gelatti.jpg",
+    "imgs": [
+      "/gelatti.jpg"
+    ],
+    "cbdPercent": 18.1,
+    "thcPercent": 0.17,
+    "phenotypeAppearance": "Purple and green frosty nugs stacked with orange pistils and heavy resin."
+  },
+  {
+    "id": "chicken-waffles",
+    "name": "Chicken & Waffles",
+    "tag": "Hybrid · Limited Drop",
+    "desc": "Dense frosted flower with deep purple accents, milky trichomes, and copper pistils. Pair photos: nug close-up and bag art.",
+    "img": "/chicken-waffles-1.jpg",
+    "imgs": [
+      "/chicken-waffles-1.jpg",
+      "/chicken-waffles-2.jpg"
+    ],
+    "cbdPercent": 18.4,
+    "thcPercent": 0.15,
+    "phenotypeAppearance": "Dense frosted purple-green flower with milky trichomes and curling copper pistils."
+  },
+  {
+    "id": "venom-runtz",
+    "name": "Venom Runtz",
+    "tag": "Hybrid · Limited Drop",
+    "desc": "Frosty light-green nug with bright orange pistils and a sweet dessert-candy terpene profile, shown with its bag art.",
+    "img": "/venom-runtz.jpg",
+    "imgs": [
+      "/venom-runtz.jpg"
+    ],
+    "cbdPercent": 18.7,
+    "thcPercent": 0.15,
+    "phenotypeAppearance": "Frosty light-green nug layered in milky trichomes with vivid orange pistils."
+  },
+  {
+    "id": "la-99",
+    "name": "L.A. 99",
+    "tag": "Premium Hybrid · Limited Drop",
+    "desc": "Artisanal frosted flower with luminous green structure, vivid orange pistils, and polished bag art.",
+    "img": "/la-99-2.jpg",
+    "imgs": [
+      "/la-99-2.jpg",
+      "/la-99-1.jpg"
+    ],
+    "cbdPercent": 18.9,
+    "thcPercent": 0.15,
+    "phenotypeAppearance": "Hand-held frosty nug with bright green calyxes, milky trichomes, and copper-orange pistils."
+  }
+]

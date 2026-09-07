@@ -97,7 +97,27 @@ export default function App() {
   const [editFormPhotos, setEditFormPhotos] = useState<string[]>([]);
   const [editPhotoSlot, setEditPhotoSlot] = useState<number>(0);
   const [hasUploadedNewPhoto, setHasUploadedNewPhoto] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Sync with server on load so users from all cities and platforms see the latest images
+  useEffect(() => {
+    fetch('/api/strains')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.strains) && data.strains.length > 0) {
+          setStrains(data.strains);
+          try {
+            localStorage.setItem('verdant_strains', JSON.stringify(data.strains));
+          } catch {
+            // ignore
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not sync strains with server, using local cache:', err);
+      });
+  }, []);
 
   // Open Edit Modal with isolated draft state
   const openEditModal = (strain: Strain) => {
@@ -109,6 +129,7 @@ export default function App() {
     setEditFormPhotos(photos);
     setEditPhotoSlot(0);
     setHasUploadedNewPhoto(false);
+    setIsUploadingPhoto(false);
   };
 
   // 3D Nug Turntable & Macro Inspection viewer state
@@ -117,7 +138,7 @@ export default function App() {
   // Current photo per menu card for multi-image strain carousels
   const [photoIndexes, setPhotoIndexes] = useState<Record<string, number>>({});
 
-  // Save strains to local storage
+  // Save strains to local storage and sync to server for all users worldwide
   const saveStrains = (newStrains: Strain[]) => {
     setStrains(newStrains);
     try {
@@ -125,6 +146,15 @@ export default function App() {
     } catch {
       // ignore
     }
+
+    // Persist to server backend so all visitors see the latest updates
+    fetch('/api/strains', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ strains: newStrains }),
+    }).catch((err) => {
+      console.error('Server sync error:', err);
+    });
   };
 
   const handleToggleSound = () => {
@@ -168,12 +198,14 @@ export default function App() {
     setLightboxStrain(null);
   };
 
-  // Compress & preview uploaded photo in active slot
+  // Compress & upload photo to server backend for global access across all devices
   const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     playWaterDrop();
+    setIsUploadingPhoto(true);
+
     const reader = new FileReader();
     reader.onload = () => {
       const img = new Image();
@@ -187,12 +219,52 @@ export default function App() {
         if (ctx) {
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-          setEditFormPhotos((prev) => {
-            const next = prev.length > 0 ? [...prev] : [dataUrl];
-            next[editPhotoSlot] = dataUrl;
-            return next;
-          });
-          setHasUploadedNewPhoto(true);
+
+          // Upload directly to server storage
+          fetch('/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              base64Data: dataUrl,
+              strainId: editingStrain?.id || 'strain',
+              slot: editPhotoSlot,
+              extension: 'jpg',
+            }),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              setIsUploadingPhoto(false);
+              if (data && data.success && data.url) {
+                setEditFormPhotos((prev) => {
+                  const next = prev.length > 0 ? [...prev] : [data.url];
+                  next[editPhotoSlot] = data.url;
+                  return next;
+                });
+                setHasUploadedNewPhoto(true);
+                setToastMessage('Photo uploaded to storage!');
+                setTimeout(() => setToastMessage(null), 3000);
+              } else {
+                // Fallback to dataUrl if server response is missing url
+                setEditFormPhotos((prev) => {
+                  const next = prev.length > 0 ? [...prev] : [dataUrl];
+                  next[editPhotoSlot] = dataUrl;
+                  return next;
+                });
+                setHasUploadedNewPhoto(true);
+              }
+            })
+            .catch((err) => {
+              console.warn('Upload API fallback to local dataUrl:', err);
+              setIsUploadingPhoto(false);
+              setEditFormPhotos((prev) => {
+                const next = prev.length > 0 ? [...prev] : [dataUrl];
+                next[editPhotoSlot] = dataUrl;
+                return next;
+              });
+              setHasUploadedNewPhoto(true);
+            });
+        } else {
+          setIsUploadingPhoto(false);
         }
       };
       img.src = reader.result as string;
@@ -854,16 +926,25 @@ export default function App() {
               <label className="text-xs font-mono text-[#8b9584]">Upload or Select Image</label>
 
               {/* 1. Upload from Device Button */}
-              <label className="flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-xs font-mono font-semibold bg-[#1c2418] hover:bg-[#273322] border border-[#ece4d3]/25 hover:border-[#c9a227] text-[#ece4d3] transition-all cursor-pointer text-center shadow-md">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                <span>Upload Photo from Device</span>
+              <label className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-xs font-mono font-semibold bg-[#1c2418] hover:bg-[#273322] border border-[#ece4d3]/25 hover:border-[#c9a227] text-[#ece4d3] transition-all cursor-pointer text-center shadow-md ${
+                isUploadingPhoto ? 'opacity-70 pointer-events-none animate-pulse' : ''
+              }`}>
+                {isUploadingPhoto ? (
+                  <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="12" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                )}
+                <span>{isUploadingPhoto ? 'Uploading to Global Storage...' : 'Upload Photo from Device'}</span>
                 <input
                   type="file"
                   accept="image/*"
+                  disabled={isUploadingPhoto}
                   onClick={(e) => {
                     (e.target as HTMLInputElement).value = '';
                   }}

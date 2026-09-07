@@ -129,8 +129,84 @@ app.get("/blossom.mp4", (req, res) => {
   }
 });
 
-// Serve public static assets (images, posters, mp4)
+// Static asset serving from public & explicit /uploads route
+const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
+const STRAINS_DATA_FILE = path.join(process.cwd(), "data", "strains.json");
+
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+if (!fs.existsSync(path.dirname(STRAINS_DATA_FILE))) {
+  fs.mkdirSync(path.dirname(STRAINS_DATA_FILE), { recursive: true });
+}
+
+app.use("/uploads", express.static(UPLOADS_DIR));
 app.use(express.static(path.join(process.cwd(), "public")));
+
+// Strains API: Get all strains (for all users worldwide across all platforms)
+app.get("/api/strains", (_req, res) => {
+  try {
+    if (fs.existsSync(STRAINS_DATA_FILE)) {
+      const data = fs.readFileSync(STRAINS_DATA_FILE, "utf-8");
+      const strains = JSON.parse(data);
+      return res.json({ strains });
+    }
+    return res.json({ strains: [] });
+  } catch (err: any) {
+    console.error("Error reading strains:", err);
+    res.status(500).json({ error: "Failed to read strains" });
+  }
+});
+
+// Strains API: Save updated strains (synced for everyone)
+app.post("/api/strains", (req, res) => {
+  try {
+    const { strains } = req.body;
+    if (!Array.isArray(strains)) {
+      return res.status(400).json({ error: "strains must be an array" });
+    }
+    fs.writeFileSync(STRAINS_DATA_FILE, JSON.stringify(strains, null, 2), "utf-8");
+    res.json({ success: true, strains });
+  } catch (err: any) {
+    console.error("Error saving strains:", err);
+    res.status(500).json({ error: "Failed to save strains" });
+  }
+});
+
+// Image Upload API: saves uploaded image file to /public/uploads/ for global access
+app.post("/api/upload-image", (req, res) => {
+  try {
+    const { base64Data, strainId, slot, extension } = req.body;
+    if (!base64Data) {
+      return res.status(400).json({ error: "base64Data is required" });
+    }
+
+    const cleanBase64 = base64Data.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(cleanBase64, "base64");
+
+    const ext = (extension || "jpg").replace(/[^a-zA-Z0-9]/g, "");
+    const safeId = (strainId || "strain").replace(/[^a-zA-Z0-9_-]/g, "");
+    const filename = `${safeId}-slot${slot ?? 0}-${Date.now()}.${ext}`;
+
+    const filePath = path.join(UPLOADS_DIR, filename);
+    fs.writeFileSync(filePath, buffer);
+
+    // Also sync to dist/uploads if dist exists
+    const distUploads = path.join(process.cwd(), "dist", "uploads");
+    if (fs.existsSync(path.join(process.cwd(), "dist"))) {
+      if (!fs.existsSync(distUploads)) {
+        fs.mkdirSync(distUploads, { recursive: true });
+      }
+      fs.writeFileSync(path.join(distUploads, filename), buffer);
+    }
+
+    const publicUrl = `/uploads/${filename}`;
+    res.json({ success: true, url: publicUrl });
+  } catch (err: any) {
+    console.error("Image upload error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Gemini: Breed custom artisanal CBD cultivar
 app.post("/api/gemini/breed-strain", async (req, res) => {
