@@ -9,34 +9,17 @@ import { isMuted, toggleMute, playSoftClick, playWaterDrop, playTrichomeChime } 
 
 // High-resolution cured nug preset photos matching the user's uploaded nug aesthetic
 const PRESET_NUG_PHOTOS = [
-  {
-    name: 'Sunset Sherbert · Frosty Purple & Amber Pistils (User Uploaded)',
-    url: '/sunset-sherbert.jpg',
-  },
-  {
-    name: 'Harlequin · Frosty Floral Spear on Black (User Uploaded)',
-    url: '/harlequin.jpg',
-  },
-  {
-    name: 'Sour Space Candy · Frosty Purple & Amber Pistils (User Uploaded)',
-    url: '/sour-space-candy.jpg',
-  },
-  {
-  {
-    name: 'Cupcake · Frosty Dessert Nug',
-    url: '/cupcake.jpg',
-  },
-  {
-    name: 'CakeBoss · Pale Frost Cake',
-    url: '/cakeboss.jpg',
-  },
-  {
-    name: 'Gelatti · Purple Gelato Cross',
-    url: '/gelatti.jpg',
-  },
-    name: 'Diamond Trichome Sinsemilla with Amber Pistils',
-    url: 'https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=1000&q=85',
-  },
+  { name: 'Sunset Sherbert · Frosty Purple & Amber Pistils (User Uploaded)', url: '/sunset-sherbert.jpg' },
+  { name: 'Harlequin · Frosty Floral Spear on Black (User Uploaded)', url: '/harlequin.jpg' },
+  { name: 'Sour Space Candy · Frosty Purple & Amber Pistils (User Uploaded)', url: '/sour-space-candy.jpg' },
+  { name: 'Cupcake · Frosty Dessert Nug', url: '/cupcake.jpg' },
+  { name: 'CakeBoss · Pale Frost Cake', url: '/cakeboss.jpg' },
+  { name: 'Gelatti · Purple Gelato Cross', url: '/gelatti.jpg' },
+  { name: 'Chicken & Waffles · Purple Frosted Hybrid', url: '/chicken-waffles-1.jpg' },
+  { name: 'Venom Runtz · Frosty Hybrid', url: '/venom-runtz.jpg' },
+  { name: 'L.A. 99 · Premium Frosted Hybrid', url: '/la-99-2.jpg' },
+  { name: 'Diamond Trichome Sinsemilla with Amber Pistils', url: 'https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=1000&q=85' },
+]
 ];
 
 const WHATSAPP_NUMBER = '12095550192';
@@ -97,6 +80,9 @@ export default function App() {
 
   // 3D Nug Turntable & Macro Inspection viewer state
   const [lightboxStrain, setLightboxStrain] = useState<Strain | null>(null);
+
+  // Current photo per menu card for multi-image strain carousels
+  const [photoIndexes, setPhotoIndexes] = useState<Record<string, number>>({});
 
   // Save strains to local storage
   const saveStrains = (newStrains: Strain[]) => {
@@ -426,7 +412,9 @@ export default function App() {
         {/* Strain Card Grid: PURE VISUALS (Photo + Name + Edit + WhatsApp) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {strains.map((s) => {
-            const displayImg = s.img || PRESET_NUG_PHOTOS[0].url;
+            const photos = s.imgs && s.imgs.length ? s.imgs : [s.img || PRESET_NUG_PHOTOS[0].url];
+            const photoIndex = Math.min(photoIndexes[s.id] ?? 0, photos.length - 1);
+            const displayImg = photos[photoIndex];
 
             return (
               <article
@@ -436,7 +424,7 @@ export default function App() {
                 {/* 1. Visual Nug Photo Container */}
                 <div
                   className="aspect-[4/3] relative overflow-hidden cursor-zoom-in bg-gradient-to-b from-[#3a3f36] via-[#1a2017] to-[#0f120d] flex items-center justify-center p-3"
-                  onClick={() => openLightbox(s)}
+                  onClick={() => openLightbox({ ...s, img: displayImg })}
                   title="Click to zoom and inspect trichomes"
                 >
                   <img
@@ -444,6 +432,33 @@ export default function App() {
                     alt={s.name}
                     className="w-full h-full object-contain filter contrast-[1.08] saturate-[1.08] drop-shadow-[0_15px_20px_rgba(0,0,0,0.6)] group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
+
+                  {photos.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        aria-label="Previous photo"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPhotoIndexes((prev) => ({ ...prev, [s.id]: (photoIndex - 1 + photos.length) % photos.length }));
+                        }}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-[#0f120d]/80 border border-[#ece4d3]/30 text-[#ece4d3] text-2xl leading-none hover:bg-[#c9a227] hover:text-[#12160f] transition-colors"
+                      >
+                        ‹
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Next photo"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPhotoIndexes((prev) => ({ ...prev, [s.id]: (photoIndex + 1) % photos.length }));
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-[#0f120d]/80 border border-[#ece4d3]/30 text-[#ece4d3] text-2xl leading-none hover:bg-[#c9a227] hover:text-[#12160f] transition-colors"
+                      >
+                        ›
+                      </button>
+                    </>
+                  )}
 
                   {/* 3D Turn & Zoom badge hint */}
                   <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-[#0f120d]/85 backdrop-blur-md border border-[#c9a227]/30 text-[10px] font-mono text-[#c9a227] opacity-90 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 shadow-md">
