@@ -19,7 +19,6 @@ const PRESET_NUG_PHOTOS = [
   { name: 'Venom Runtz · Frosty Hybrid', url: '/venom-runtz.jpg' },
   { name: 'L.A. 99 · Premium Frosted Hybrid', url: '/la-99-2.jpg' },
   { name: 'Diamond Trichome Sinsemilla with Amber Pistils', url: 'https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=1000&q=85' },
-]
 ];
 
 const WHATSAPP_NUMBER = '12095550192';
