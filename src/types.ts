@@ -4,11 +4,20 @@ export interface Terpene {
   note: string;
 }
 
+export type StrainCategory = 'Indica' | 'Hybrid' | 'Sativa';
+
 export interface Strain {
   id: string;
   name: string;
   tag?: string;
   desc?: string;
+  /** One-line vibe / effects skim shown before the long blurb */
+  vibe?: string;
+  effects?: string[];
+  category?: StrainCategory;
+  featured?: boolean;
+  isNew?: boolean;
+  soldOut?: boolean;
   img?: string;
   imgs?: string[];
   cbdPercent?: number;

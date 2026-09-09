@@ -5,6 +5,10 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'sunset-sherbert',
     name: 'Sunset Sherbert',
     tag: 'Indica-Dominant · Cold Cured',
+    category: 'Indica',
+    vibe: 'Dessert calm · body ease · evening wind-down',
+    effects: ['Calm', 'Body ease', 'Dessert'],
+    featured: true,
     desc: 'Dense, royal purple and deep violet calyxes blanketed in crystalline milky resin trichomes, accented by vibrant curly copper-orange pistils and sweet dessert terpenes.',
     img: '/sunset-sherbert.jpg',
     cbdPercent: 18.8,
@@ -24,6 +28,9 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'northern-lights',
     name: 'Northern Lights',
     tag: 'Indica · Heirloom Clone',
+    category: 'Indica',
+    vibe: 'Pine forest · deep rest · classic nightcap',
+    effects: ['Rest', 'Pine', 'Grounded'],
     desc: 'Dense, frosty hand-trimmed buds featuring forest greens and delicate lavender hues, blanketed in crystalline milky resin heads.',
     img: 'https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&w=800&q=80',
     cbdPercent: 19.4,
@@ -43,6 +50,9 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'harlequin',
     name: 'Harlequin',
     tag: 'Sativa-Dominant · Select Phenotype',
+    category: 'Sativa',
+    vibe: 'Daylight clarity · floral lift · easy focus',
+    effects: ['Uplift', 'Focus', 'Floral'],
     desc: 'Iconic sativa-dominant floral spear with frosty crystalline sugar leaves and stacked calyxes blanketed in glistening glandular trichomes, accented by delicate golden-amber stigmas.',
     img: '/harlequin.jpg',
     cbdPercent: 17.6,
@@ -62,6 +72,10 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'sour-space-candy',
     name: 'Sour Space Candy',
     tag: 'Hybrid · Living Soil Clone',
+    category: 'Hybrid',
+    vibe: 'Candied diesel · balanced body · crowd favorite',
+    effects: ['Balanced', 'Candy', 'Relief'],
+    featured: true,
     desc: 'Exquisite seedless buds boasting vivid deep violet calyxes blanketed in frosty crystalline trichomes, accented with twisting copper-orange stigmas and pungent candied diesel terpenes. Pair photos: cured flower and collectible bag art.',
     img: '/sour-space-candy.jpg',
     imgs: ['/sour-space-candy.jpg', '/sour-space-candy-2.jpg'],
@@ -82,6 +96,10 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'cupcake',
     name: 'Cupcake',
     tag: 'Hybrid · Dessert Cure',
+    category: 'Hybrid',
+    vibe: 'Vanilla frosting · soft calm · sweet treat',
+    effects: ['Sweet', 'Soft calm'],
+    isNew: true,
     desc: 'Frosty conical nugs with bright orange pistils and sweet dessert terpenes.',
     img: '/cupcake.jpg',
     cbdPercent: 18.2,
@@ -101,6 +119,9 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'cakeboss',
     name: 'CakeBoss',
     tag: 'Hybrid · Frosted Cake',
+    category: 'Hybrid',
+    vibe: 'Lemon cream cake · gentle ease',
+    effects: ['Dessert', 'Gentle'],
     desc: 'Pale-green frosty nugs with sparse amber pistils and a softly sweet cake aroma. Pair photos: nug close-up and collectible bag art.',
     img: '/cakeboss.jpg',
     imgs: ['/cakeboss.jpg', '/cakeboss-2.jpg'],
@@ -121,6 +142,9 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'gelatti',
     name: 'Gelatti',
     tag: 'Hybrid · Gelato Cross',
+    category: 'Hybrid',
+    vibe: 'Gelato cream · grape candy · dessert-gas',
+    effects: ['Creamy', 'Gas'],
     desc: 'Purple and green frosty nugs with curling orange pistils and rich dessert-gas terpenes.',
     img: '/gelatti.jpg',
     cbdPercent: 18.1,
@@ -140,6 +164,11 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'chicken-waffles',
     name: 'Chicken & Waffles',
     tag: 'Hybrid · Limited Drop',
+    category: 'Hybrid',
+    vibe: 'Buttery waffle · candied citrus · limited',
+    effects: ['Pastry', 'Limited'],
+    isNew: true,
+    featured: true,
     desc: 'Dense frosted flower with deep purple accents, milky trichomes, and copper pistils. Pair photos: nug close-up and bag art.',
     img: '/chicken-waffles-1.jpg',
     imgs: ['/chicken-waffles-1.jpg', '/chicken-waffles-2.jpg'],
@@ -160,6 +189,10 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'venom-runtz',
     name: 'Venom Runtz',
     tag: 'Hybrid · Limited Drop',
+    category: 'Hybrid',
+    vibe: 'Fruity candy · lemon cream · limited drop',
+    effects: ['Candy', 'Limited'],
+    isNew: true,
     desc: 'Frosty light-green nug with bright orange pistils and a sweet dessert-candy terpene profile, shown with its bag art.',
     img: '/venom-runtz.jpg',
     cbdPercent: 18.7,
@@ -179,6 +212,11 @@ export const DEFAULT_STRAINS: Strain[] = [
     id: 'la-99',
     name: 'L.A. 99',
     tag: 'Premium Hybrid · Limited Drop',
+    category: 'Hybrid',
+    vibe: 'Citrus sherbet · polished premium · limited',
+    effects: ['Premium', 'Citrus'],
+    featured: true,
+    isNew: true,
     desc: 'Artisanal frosted flower with luminous green structure, vivid orange pistils, and polished bag art.',
     img: '/la-99-2.jpg',
     imgs: ['/la-99-2.jpg', '/la-99-1.jpg'],
@@ -207,11 +245,7 @@ export const GROWTH_STAGES: GrowthStageInfo[] = [
     title: '45° Nursery Clone Cutting',
     description: 'Fresh 45-degree angle nursery cutting anchored in living organic soil. Trimmed fan leaf tips minimize transpiration while vascular callus forms at the cut base.',
     botanicalHighlight: 'Callus tissue initiates adventitious rooting as the vascular cambium responds to living soil mycorrhizae.',
-    cannabinoids: {
-      cbd: '< 0.5%',
-      thc: '< 0.05%',
-      terpenes: '0.1% foliage',
-    },
+    cannabinoids: { cbd: '< 0.5%', thc: '< 0.05%', terpenes: '0.1% foliage' },
     keyFeatures: ['45° angle nursery cut base', 'Trimmed fan leaf tips', 'Living organic soil contact'],
   },
   {
@@ -223,11 +257,7 @@ export const GROWTH_STAGES: GrowthStageInfo[] = [
     title: 'Adventitious Roots & Shoot Vigor',
     description: 'White adventitious root tendrils branch deep into the living mycorrhizal soil. The apical center shoot stretches upward, unfolding fresh true palmate leaves.',
     botanicalHighlight: 'Adventitious root hairs interface with soil fungal networks, supercharging nutrient and water uptake.',
-    cannabinoids: {
-      cbd: '1.2%',
-      thc: '0.06%',
-      terpenes: '0.3% terpenes',
-    },
+    cannabinoids: { cbd: '1.2%', thc: '0.06%', terpenes: '0.3% terpenes' },
     keyFeatures: ['Branching white adventitious roots', 'Microscopic root hairs', 'Apical shoot takeoff'],
   },
   {
@@ -239,11 +269,7 @@ export const GROWTH_STAGES: GrowthStageInfo[] = [
     title: 'Lush Palmate Foliage',
     description: 'Fibrous stalks develop sturdy nodes with iconic 5, 7, and 9-bladed serrated fan leaves absorbing warm studio light.',
     botanicalHighlight: 'Robust xylem and phloem transport silica and minerals, building sturdy structural branches.',
-    cannabinoids: {
-      cbd: '2.5%',
-      thc: '0.08%',
-      terpenes: '0.5% monoterpenes',
-    },
+    cannabinoids: { cbd: '2.5%', thc: '0.08%', terpenes: '0.5% monoterpenes' },
     keyFeatures: ['Multi-bladed serrated fan leaves', 'Alternating robust nodes', 'Vigorous sun-seeking canopy'],
   },
   {
@@ -255,11 +281,7 @@ export const GROWTH_STAGES: GrowthStageInfo[] = [
     title: 'Calyx Swell & Fresh Stigmas',
     description: 'Female pre-flowers swell along the nodes. Delicate paired stigmas (pistils) push outward from green calyxes with early hints of light purple bract margins.',
     botanicalHighlight: 'Capitate-stalked glandular trichomes begin crystal formation across calyxes and sugar leaves.',
-    cannabinoids: {
-      cbd: '8.5%',
-      thc: '0.10%',
-      terpenes: '1.4% fresh aromatics',
-    },
+    cannabinoids: { cbd: '8.5%', thc: '0.10%', terpenes: '1.4% fresh aromatics' },
     keyFeatures: ['Swelling teardrop calyxes', 'Twin protruding white stigmas', 'Initial crystal resin beading'],
   },
   {
@@ -271,11 +293,7 @@ export const GROWTH_STAGES: GrowthStageInfo[] = [
     title: 'Seedless Flower in Green & Light Purple',
     description: 'Hand-trimmed, seedless cured flower. Showcases vibrant botanical green bracts crowned with soft light purple and lilac hues, curly fiery copper pistils, and frosty crystalline trichomes.',
     botanicalHighlight: '100% seedless female flower. Anthocyanin synthesis produces soft light purple calyx margins alongside emerald green chlorophyll.',
-    cannabinoids: {
-      cbd: '18.8% – 20.4%',
-      thc: '< 0.20%',
-      terpenes: '2.85% Total Terpenes',
-    },
+    cannabinoids: { cbd: '18.8% – 20.4%', thc: '< 0.20%', terpenes: '2.85% Total Terpenes' },
     keyFeatures: ['Botanical green & soft light purple calyxes', 'Completely seedless sinsemilla', 'Frosty blanket of milky/amber trichomes'],
   },
 ];
@@ -284,4 +302,12 @@ export function getStageForProgress(progress: number): GrowthStageInfo {
   const clamped = Math.max(0, Math.min(1, progress));
   const stage = GROWTH_STAGES.find((s) => clamped >= s.progressRange[0] && clamped <= s.progressRange[1]);
   return stage || GROWTH_STAGES[GROWTH_STAGES.length - 1];
+}
+
+export function inferCategory(strain: Strain): 'Indica' | 'Hybrid' | 'Sativa' {
+  if (strain.category) return strain.category;
+  const t = (strain.tag || '').toLowerCase();
+  if (t.includes('indica')) return 'Indica';
+  if (t.includes('sativa')) return 'Sativa';
+  return 'Hybrid';
 }
